@@ -1,0 +1,79 @@
+<?php
+
+/**
+ * Implements hook_schema()
+ * 
+ * @return array
+ */
+function hs_resource_schema()
+{
+    $schema = array();
+    $schema['hs_resource'] = array(
+        'description' => 'The base table for resources.',
+        'fields' => array(
+            'rid' => array(
+                'type' => 'serial',
+                'unsigned' => true,
+                'not null' => true,
+            ),
+            'term' => array(
+                'type' => 'varchar',
+                'not null' => true,
+                'length' => 100,
+            ),
+            'type' => array(
+                'type' => 'varchar',
+                'not null' => true,
+                'length' => 20,
+            ),
+            'file' => array(
+                'type' => 'varchar',
+                'length' => 255,
+            ),
+        ),
+        'primary key' => array('rid'),
+        'indexes' => array(
+            'hs_resource_term' => array('term'),
+        ),
+    );
+    
+    $schema['hs_resource_translation'] = array(
+        'description' => 'The base table for resource translations.',
+        'fields' => array(
+            'rtid' => array(
+                'type' => 'serial',
+                'unsigned' => true,
+                'not null' => true,
+            ),
+            'rid' => array(
+                'type' => 'int',
+                'unsigned' => true,
+                'not null' => true,
+            ),
+            'language' => array(
+                'type' => 'varchar',
+                'length' => 10,
+            ),
+            'value' => array(
+                'type' => 'text',
+                'size' => 'medium',
+            ),
+            'format' => array(
+                'type' => 'varchar',
+                'length' => 20,
+            ),
+        ),
+        'primary key' => array('rtid'),
+        'foreign keys' => array(
+            'hs_resource_translation' => array(
+                'table' => 'hs_resource',
+                'columns' => array('rid' => 'rid'),
+            ),
+        ),
+        'indexes' => array(
+            'hs_resource_translation_language' => array('language'),
+        ),
+    );
+    
+    return $schema;
+}

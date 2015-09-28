@@ -1,0 +1,75 @@
+<?php
+
+/**
+ * Implements hook_menu().
+ */
+function hs_admin_content_search_menu()
+{
+    $items = array();
+
+    $items['admin/content/search'] = array(
+        'title' => 'Content search',
+        'page callback' => 'drupal_get_form',
+        'page arguments' => array('hs_admin_content_search_form'),
+        'access arguments' => array('access content overview'),
+        'file' => 'hs_admin_content_search.admin.inc',
+        'type' => MENU_CALLBACK,
+    );
+
+    return $items;
+}
+
+/**
+ * Implements hook_form_alter().
+ */
+function hs_admin_content_search_form_node_admin_content_alter(&$form, &$form_state)
+{
+    // Prevent the node search from being displayed on the "node_delete_confirm" and "node_multiple_delete_confirm" pages
+    $is_delete_confirmation = isset($form_state['values']['operation']) && 'delete' === $form_state['values']['operation'];
+    if ($is_delete_confirmation) {
+        return;
+    }
+
+    module_load_include('inc', 'hs_admin_content_search', 'hs_admin_content_search.admin');
+
+    _hs_admin_content_search_filter_form($form, $form_state);
+}
+
+function _hs_admin_content_search_init_node_module()
+{
+    module_load_include('inc', 'node', 'node.admin');
+}
+
+function _hs_admin_content_search_query_get()
+{
+    if (!isset($_REQUEST['s'])) {
+        return FALSE;
+    }
+
+    $query = $_REQUEST['s'];
+    $string = preg_replace('/[^0-9a-zA-Z -]/', '', $query);
+
+    return $string;
+}
+
+function _hs_admin_content_search_query_reset()
+{
+    drupal_goto('admin/content');
+}
+
+function _hs_admin_content_search_query_is_valid($string)
+{
+    /*if (empty($string)) {
+        return FALSE;
+    }*/
+
+    return TRUE;
+}
+
+function hs_admin_content_search_build_filter_query(SelectQueryInterface $query)
+{
+    $query_string = _hs_admin_content_search_query_get();
+    if (_hs_admin_content_search_query_is_valid($query_string)) {
+        $query->condition('title', "%{$query_string}%", 'LIKE');
+    }
+}

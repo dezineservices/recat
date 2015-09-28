@@ -1,0 +1,43 @@
+// Compass
+@import "compass/css3";
+@import "compass/typography";
+
+// Settings
+@import "settings/base";
+@import "libraries/foundation/foundation/functions";
+@import "libraries/foundation/foundation/settings";
+
+// Functions / Mixins
+@import
+  "partials/functions",
+  "partials/mixins";
+
+// Placeholders
+@import "partials/placeholders";
+
+// Base definition
+html, body {
+  background: $backgroundBase;
+  min-height: 100%;
+}
+
+body {
+  font: #{$baseFontWeight} #{$baseFontSize}/#{$baseLineHeight} $fontMain;
+  color: $fontColorBase;
+  -webkit-font-smoothing: antialiased;
+  min-width: 1200px;
+}
+
+#main {
+  background: #fff;
+  padding: 70px 0 35px;
+}
+
+// Partials
+@import "partials/__partials";
+
+// Components
+@import "components/__components";
+
+// Transitions
+@import "partials/transitions";

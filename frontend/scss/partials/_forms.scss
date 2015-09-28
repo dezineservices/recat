@@ -1,0 +1,69 @@
+input {
+  font-family: $fontForm;
+  font-weight: 100;
+  font-size: 15px;
+  padding: 13px 15px 12px;
+  margin: 0 0 25px;
+  color: $fontColorBase;
+  background: #eceff4;
+  border: 1px solid #cad3df;
+  outline: none;
+  width: 100%;
+  -webkit-appearance: none;
+  @include border-radius($borderRadius);
+  @include transition(border-color .2s ease-in-out);
+
+  &:focus {
+    border-color: $brandColor;
+  }
+
+  &.error {
+    border-color: #d2335c;
+  }
+
+  &[type="submit"] {
+    background: $linkColor;
+    border: none;
+    padding: 14px 16px 13px;
+    text-align: center;
+    cursor: pointer;
+    color: #fff;
+    text-transform: uppercase;
+    font-weight: 500;
+    @include transition(background .2s ease-in-out);
+
+    &:hover {
+      background: $linkColorHover;
+    }
+  }
+}
+
+textarea {
+  font-family: $fontForm;
+  font-weight: 100;
+  font-size: 15px;
+  padding: 16px 15px 15px;
+  margin: 0 0 25px;
+  color: $fontColorBase;
+  background: #eceff4;
+  border: 1px solid #cad3df;
+  outline: none;
+  width: 100%;
+  height: 95px;
+  resize: vertical;
+  -webkit-appearance: none;
+  @include border-radius($borderRadius);
+  @include transition(border-color .2s ease-in-out);
+
+  &:focus {
+    border-color: $brandColor;
+  }
+
+  &.error {
+    border-color: #d2335c;
+  }
+}
+
+.form-textarea-wrapper {
+  margin: 0 0 25px;
+}

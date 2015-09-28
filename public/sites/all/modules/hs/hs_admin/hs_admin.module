@@ -1,0 +1,244 @@
+<?php
+
+/**
+ * Implements hook_menu()
+ */
+function hs_admin_menu()
+{
+    $items = hs_admin_submodule_invoke_all('menu');
+
+    return $items;
+}
+
+function hs_admin_schema_alter(&$schema)
+{
+    hs_admin_submodule_alter('schema', $schema);
+}
+
+function hs_admin_menu_alter(&$items)
+{
+    hs_admin_submodule_alter('menu', $items);
+}
+
+function hs_admin_menu_link_alter(&$item, $menu)
+{
+    hs_admin_submodule_alter('menu_link', $item, $menu);
+}
+
+function hs_admin_menu_link_insert($link)
+{
+    //hs_admin_submodule_alter('menu_link_insert', $link);
+    hs_admin_menu_menu_link_insert($link);
+}
+
+function hs_admin_menu_link_update($link)
+{
+    //hs_admin_submodule_alter('menu_link_update', $link);
+    hs_admin_menu_menu_link_update($link);
+}
+
+/**
+ * Implements hook_form_alter()
+ */
+function hs_admin_form_alter(&$form, &$form_state, $form_id)
+{
+    hs_admin_submodule_alter('form', $form, $form_state, $form_id);
+}
+
+/**
+ * Implements hook_theme()
+ */
+function hs_admin_theme()
+{
+    $themes = hs_admin_submodule_invoke_all('theme');
+
+    return $themes;
+}
+
+// region Submodule hooks (both actual submodules as partial includes)
+
+function hs_admin_submodule_list()
+{
+    $submodules = &drupal_static(__FUNCTION__);
+
+    if (!isset($submodules)) {
+        $cache = cache_get('hs_admin_submodules', 'cache');
+        if ($cache && !empty($cache->data)) {
+            $submodules = $cache->data;
+        }
+    }
+
+    if (empty($submodules)) {
+        $module_files = _hs_admin_scan_directory('module');
+        foreach ($module_files as $filename => $file) {
+            if ($file->name === 'hs_admin') {
+               continue;
+            }
+
+            $file->type = 'module';
+            $submodules[$filename] = $file;
+        }
+
+        $inc_files = _hs_admin_scan_directory('inc', 'includes');
+        foreach ($inc_files as $filename => $file) {
+            $file->type = 'inc';
+            $submodules[$filename] = $file;
+        }
+
+        cache_set('hs_admin_submodules', $submodules, 'cache');
+    }
+
+    return $submodules;
+}
+
+function hs_admin_submodule_implements($hook)
+{
+    $implementations = &drupal_static(__FUNCTION__);
+
+    if (!isset($implementations)) {
+        $implementations = array();
+        $cache = cache_get('hs_admin_submodule_implements', 'cache');
+        if ($cache && !empty($cache->data)) {
+            $implementations = $cache->data;
+        }
+    }
+
+    if (!isset($implementations[$hook])) {
+        $implementations[$hook] = array();
+
+        foreach (hs_admin_submodule_list() as $filename => $submodule) {
+            $module_name = NULL;
+            $module_implements_hook = FALSE;
+
+            if ($submodule->type === 'module') {
+                $module_name = $submodule->name;
+                $module_implements_hook = module_hook($module_name, $hook);
+            } elseif ($submodule->type === 'inc') {
+                module_load_include('inc', 'hs_admin', 'includes/' . $submodule->name);
+                $module_name = str_replace('.', '_', $submodule->name);
+                $hook_fnc = $module_name . '_' . $hook;
+                $module_implements_hook = function_exists($hook_fnc);
+            }
+
+            if ($module_implements_hook) {
+                $implementations[$hook][$module_name] = $submodule;
+            }
+        }
+
+        // Allow submodules to change the weight of specific implementations, but avoid an infinite loop.
+        if ($hook != 'submodule_implements_alter') {
+            hs_admin_submodule_alter('submodule_implements', $implementations[$hook], $hook);
+        }
+
+        cache_set('hs_admin_submodule_implements', $implementations);
+    }
+
+    return $implementations[$hook];
+}
+
+function hs_admin_submodule_invoke($submodule, $hook)
+{
+    // Let Drupal handle the invoke when $submodule is an actual Drupal submodule.
+    if (module_hook($submodule, $hook)) {
+        return module_invoke($submodule, $hook);
+    }
+
+    // The submodule is probably just an included file. Mimic the module_invoke with a custom implementation.
+    $name = sprintf('includes/%s', $submodule);
+    $inc_file = module_load_include('inc', 'hs_admin', $name);
+    if (!$inc_file) {
+        // Include file does not exist
+        return NULL;
+    }
+
+    $submodule_name = str_replace('.', '_', $submodule);
+    $function = sprintf('%s_%s', $submodule_name, $hook);
+
+    if (!function_exists($function)) {
+        // Hook not implemented in include file
+        return NULL;
+    }
+
+    // Remove $submodule and $hook from the arguments
+    $args = func_get_args();
+    unset($args[0], $args[1]);
+
+    foreach ($args as $key => &$arg) {
+        $args[$key] = &$arg;
+    }
+
+    $hook_result = call_user_func_array($function, $args);
+    return $hook_result;
+}
+
+function hs_admin_submodule_invoke_all($hook)
+{
+    // Get a list of all submodules (real and include files)
+    /*$module_files = _hs_admin_scan_directory('module');
+    $inc_files = _hs_admin_scan_directory('inc', 'includes');
+    $modules_and_includes = $module_files + $inc_files;*/
+
+    $submodules = hs_admin_submodule_list();
+
+    // Execute defined hooks
+    $return = array();
+    foreach ($submodules as $filename => $submodule) {
+        // Ignore main .module file
+        if ($submodule->filename === 'hs_admin.module') {
+            continue;
+        }
+
+        $module_name = $submodule->name;
+        $result = hs_admin_submodule_invoke($module_name, $hook);
+
+        if (isset($result) && is_array($result)) {
+            $return = array_merge($return, $result);
+        } elseif (isset($result)) {
+            $return[] = $result;
+        }
+    }
+
+    return $return;
+}
+
+/**
+ * @see drupal_alter()
+ */
+function hs_admin_submodule_alter($hook, &$data, &$context1 = NULL, &$context2 = NULL, &$context3 = NULL)
+{
+    $hook .= '_alter';
+    $submodules = hs_admin_submodule_implements($hook);
+
+    // @todo integrate with drupal_static()
+    foreach ($submodules as $module_name => $submodule) {
+        $fnc = $module_name . '_' . $hook;
+
+        $include_name = $submodule->type === 'inc'
+            ? 'includes/' . $submodule->name
+            : NULL;
+
+        module_load_include($submodule->type, 'hs_admin', $include_name);
+        if (function_exists($fnc)) {
+            $fnc($data, $context1, $context2, $context3);
+        }
+    }
+}
+
+function _hs_admin_scan_directory($extension, $subdirectory = NULL)
+{
+    $directory = drupal_get_path('module', 'hs_admin');
+
+    if ($subdirectory) {
+        $directory .= '/' . $subdirectory;
+    }
+
+    $options['key'] = 'filename';
+
+    // Regex pattern for file names ending with $extension
+    $pattern = sprintf('/\.%s$/', $extension);
+    $matching_files = file_scan_directory($directory, $pattern, $options);
+
+    return $matching_files;
+}
+
+// endregion Submodule hooks

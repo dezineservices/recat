@@ -1,0 +1,7 @@
+name = Blocks
+description = Provides various blocks
+package = Recat
+core = 7.x
+version = 7.x-0.1
+
+dependencies[] = hs_resource

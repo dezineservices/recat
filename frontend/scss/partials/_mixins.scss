@@ -1,0 +1,92 @@
+@mixin before-element($content: " ") {
+  position: absolute;
+  content: $content;
+}
+
+@mixin before-reset {
+  display: none;
+}
+
+@mixin font-condensed {
+  font-family: $fontAlt;
+  font-weight: 400;
+}
+
+// Style a heading
+@mixin heading-styles($fontSize, $margin, $font: $fontTitle, $fontWeight: 400, $color: $fontColorTitle, $lineHeight: $titleLineHeight) {
+  font-family: $font;
+  font-weight: $fontWeight;
+  line-height: $lineHeight;
+  color: $color;
+  text-transform: uppercase;
+
+  $properties: ();
+  $values: ();
+
+  @if (length($fontSize) > 1) {
+    $properties: append($properties, font-size);
+    $values: append($values, $fontSize);
+  } @else {
+    font-size: unquote($fontSize);
+  }
+
+  @if (length($margin) > 1) {
+    $properties: append($properties, margin);
+    $values: append($values, $margin);
+  } @else {
+    margin: unquote($margin);
+  }
+
+  @if (length($properties) > 0) {
+    @include media-query-list-properties($properties, $values);
+  }
+}
+
+@mixin media-query-list-property($property, $value) {
+  @if (length($value) > 1) {
+    $properties: ();
+    $values: ();
+
+    $properties: append($properties, $property);
+    $values: append($values, $value);
+
+    @include media-query-list-properties($properties, $values);
+  } @else {
+    #{$property}: unquote(nth($value, 1));
+  }
+}
+
+@mixin media-query-list-properties($properties, $values) {
+  $index: 1;
+
+  @each $property in $properties {
+    $value: nth($values, $index);
+    #{$property}: unquote(nth($value, 1));
+
+    $index: $index + 1;
+  }
+
+  $index: 1;
+  $propertyIndex: 1;
+  $mediaqueries: ($small-up, $medium-up, $large-up, $xlarge-up);
+
+  @each $breakpoint in $breakpoints {
+    @if ($index > 1 and $index < length($mediaqueries) + 1) {
+      $propertyIndex: 1;
+
+      @media #{nth($mediaqueries, $index)} {
+        @each $property in $properties {
+          $value: nth($values, $propertyIndex);
+
+          @if $index < length($value) + 1 and nth($value, $index) != false {
+            #{$property}: unquote(nth($value, $index));
+          }
+
+          $propertyIndex: $propertyIndex + 1;
+        }
+      }
+    }
+
+    $index: $index + 1;
+  }
+}

@@ -1,0 +1,10 @@
+/* fade out unpublished posts */
+.table-select-processed .not-published.even { background-color: #fbfbfb; }
+.table-select-processed .not-published td,
+.table-select-processed .not-published th { color: #999; }
+.table-select-processed .not-published .marker { color: lightskyblue; }
+.table-select-processed .not-published a { color: lightslategray; }
+
+/* highlight published posts with green border on the left */
+.table-select-processed .published { border-left: outset 5px lightgreen; }
+.table-select-processed .published.selected { border-left-color: yellow; }

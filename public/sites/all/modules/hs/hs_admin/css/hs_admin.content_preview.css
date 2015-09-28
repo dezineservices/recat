@@ -1,0 +1,3 @@
+/* hide the Drupal toolbar */
+#toolbar { display: none; }
+body.toolbar { padding-top: 0 !important; }

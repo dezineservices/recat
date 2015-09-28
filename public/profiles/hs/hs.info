@@ -1,0 +1,75 @@
+name = Hs
+description = Base distribution of Drupal for multilingual websites.
+core = 7.x
+
+;Standard modules
+;----------------
+
+dependencies[] = block
+dependencies[] = contextual
+dependencies[] = dashboard
+dependencies[] = image
+dependencies[] = list
+dependencies[] = menu
+dependencies[] = number
+dependencies[] = options
+dependencies[] = path
+dependencies[] = taxonomy
+dependencies[] = dblog
+dependencies[] = shortcut
+dependencies[] = toolbar
+dependencies[] = field_ui
+dependencies[] = file
+;dependencies[] = rdf
+;dependencies[] = search
+
+;Development
+;-----------
+dependencies[] = devel
+
+;Multilanguage
+;-------------
+dependencies[] = locale
+dependencies[] = i18n
+dependencies[] = i18n_field
+dependencies[] = i18n_node
+dependencies[] = i18n_redirect
+dependencies[] = i18n_translation
+dependencies[] = i18n_menu
+dependencies[] = i18n_taxonomy
+dependencies[] = i18n_string
+dependencies[] = i18n_block
+dependencies[] = i18n_select
+dependencies[] = translation
+
+;Forms
+;-----
+
+dependencies[] = webform
+dependencies[] = webform_validation
+
+;Editors
+;-------
+dependencies[] = wysiwyg
+dependencies[] = imce
+dependencies[] = imce_wysiwyg
+dependencies[] = linkit
+
+;Various
+;-------
+dependencies[] = block_class
+dependencies[] = globalredirect
+dependencies[] = pathauto
+dependencies[] = pathologic
+dependencies[] = transliteration
+dependencies[] = xmlsitemap
+dependencies[] = xmlsitemap_i18n
+dependencies[] = xmlsitemap_menu
+dependencies[] = metatag
+dependencies[] = metatag_opengraph
+
+;In-house
+;--------
+dependencies[] = hs_enhancements
+dependencies[] = hs_admin
+dependencies[] = hs_resource

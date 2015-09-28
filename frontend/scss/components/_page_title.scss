@@ -1,0 +1,25 @@
+#pageTitle {
+  background: #435777;
+  text-align: center;
+  overflow: hidden;
+  position: relative;
+  z-index: 1;
+
+  &:before {
+    content: " ";
+    left: 0;
+    right: 0;
+    bottom: 0;
+    top: 0;
+    position: fixed;
+    background: url('#{$imgPath}/bg-scene.jpg') no-repeat center top;
+    background-size: 100% auto;
+    pointer-events: none;
+    z-index: 0;
+    @include transform(translateZ(0));
+  }
+
+  h1 {
+    margin: 68px 0 60px;
+  }
+}

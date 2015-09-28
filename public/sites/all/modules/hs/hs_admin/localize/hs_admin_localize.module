@@ -1,0 +1,249 @@
+<?php
+
+function hs_admin_localize_menu()
+{
+    $items[_hs_admin_localize_get_url()] = array(
+        'title' => 'Localize content',
+        'description' => 'Localize content',
+        'page callback' => 'drupal_get_form',
+        'page arguments' => array('hs_admin_localize_page', 4),
+        'access arguments' => array('translate content'),
+        'file' => 'hs_admin_localize.admin.inc',
+    );
+
+    // all content category tab
+    $items[_hs_admin_localize_get_url('all')] = array(
+        'title' => 'All',
+        'type' => MENU_DEFAULT_LOCAL_TASK,
+        'weight' => -5,
+    );
+
+    // node type category tabs
+    foreach (node_type_get_types() as $machine_name => $node_type) {
+        $path_fragment = 'node_' . $machine_name;
+        $items[_hs_admin_localize_get_url($path_fragment)] = array(
+            'title' => $node_type->name,
+            'access arguments' => array('translate content'),
+            'type' => MENU_LOCAL_TASK,
+        );
+    }
+
+    // taxonomy tab
+    $items[_hs_admin_localize_get_url('taxonomy')] = array(
+        'title' => 'Taxonomy',
+        'access arguments' => array('translate content'),
+        'type' => MENU_LOCAL_TASK,
+        'weight' => 100,
+    );
+
+    // resources tab
+    $items[_hs_admin_localize_get_url('hs_resource')] = array(
+        'title' => 'Resources',
+        'access arguments' => array('translate content'),
+        'type' => MENU_LOCAL_TASK,
+        'weight' => 99,
+    );
+
+    return $items;
+}
+
+function hs_admin_localize_sources($type = 'all')
+{
+    $all_sources = array('node', 'taxonomy_vocabulary', 'taxonomy_term', 'hs_resource');
+
+    if (!$type || $type == 'all') {
+        return $all_sources;
+    }
+
+    if (preg_match('/^node_/', $type)) {
+        return array('node');
+    }
+
+    switch ($type) {
+        case 'taxonomy':
+            return array('taxonomy_vocabulary', 'taxonomy_term');
+
+        case 'taxonomy_vocabulary':
+        case 'taxonomy_term':
+        case 'hs_resource':
+            return array($type);
+    }
+
+    return $all_sources;
+}
+
+/**
+ * @param string $string
+ * @param string|array $search
+ * @param int $max_length
+ *
+ * @return string
+ */
+function hs_admin_localize_text_teaser($string, $search = NULL, $max_length = NULL, $glue = NULL)
+{
+    $teaser = strip_tags($string);
+
+    if (!$max_length) {
+        $max_length = variable_get('teaser_length', 500);
+    }
+
+    if (!$glue) {
+        $glue = ' (...) ';
+    }
+
+    // No need to highlight matching contents, as no search terms where provided.
+    if (!$search) {
+        // Trim simple teaser text.
+        if (drupal_strlen($teaser) > $max_length) {
+            $teaser = drupal_substr($teaser, 0, $max_length) . $glue;
+        }
+
+        return $teaser;
+    }
+
+    // Continue to process the string for highlighting all matches.
+    // Dynamically build the regex expression for locating contents.
+
+    // - Quote the search input, so we won't break the regex pattern.
+    if (is_array($search)) {
+        // We have multiple search terms, so process each search string individually.
+        $match_parts = array();
+        foreach ($search as $search_string) {
+            $match_parts[] = preg_quote($search_string, '/');
+        }
+
+        // Convert the array to a concatenated string.
+        $match_string = implode('|', $match_parts);
+    } else {
+        $match_string = preg_quote($search, '/');
+    }
+
+    // - Generate the matching pattern
+    $match_pattern = '/(' . $match_string . ')/i';
+
+
+    // Find matches for search string in text.
+    $matches = array();
+    $match_count = preg_match_all($match_pattern, $teaser, $matches, PREG_OFFSET_CAPTURE);
+
+
+    // Trim the content, before we start modifying it's length (by adding some syntax to allow match highlighting).
+    $should_trim = drupal_strlen($teaser) > $max_length;
+    if ($should_trim && $match_count == 0) {
+        // Trim simple teaser text.
+        $teaser = drupal_substr($teaser, 0, $max_length) . $glue;
+    } elseif ($should_trim) {
+        // Trim the teaser text by dividing the continuous text into regions around the matches, cropping the
+        // content outside some preset boundaries.
+        $teaser_parts = array();
+
+        // How much characters do we want to keep around the matched content?
+        $fragment_context = ceil($max_length / $match_count);
+
+        // A list of matching regions. Each region is an indexed array containing two entries:
+        // [0]: the matched search string
+        // [1]: the string position.
+        $regions = $matches[1];
+        $last_region = FALSE;
+        $current_region = reset($regions);
+
+        while ($current_region) {
+            // Determine where the last region ended.
+            $last_fragment_end = FALSE;
+            if ($last_region) {
+                $last_search_string = $last_region[0];
+                $last_region_start = $last_region[1];
+
+                $last_fragment_end = $last_region_start + strlen($last_search_string) + $fragment_context;
+            }
+
+            // Determine where the current region will start.
+            $current_search_string = $current_region[0];
+            $current_region_start = $current_region[1];
+
+            $len_current_search_string = strlen($current_search_string);
+            $len_context_before = $fragment_context;
+            $len_context_after = $fragment_context;
+
+            // Not enough context left for the extra context before the matching search term.
+            if ($len_context_before > $current_region_start) {
+                $len_context_before = $current_region_start;
+            }
+
+            $current_fragment_start = $current_region_start - $len_context_before;
+
+            // When the content of the current and previous fragment are overlapping, we want to join them together.
+            $join_fragments = $last_region !== FALSE && $current_fragment_start <= $last_fragment_end;
+            if ($join_fragments) {
+                // Move the start of the current fragment to where the previous one has stopped.
+                $len_context_before = $last_fragment_end - $current_fragment_start + 1;
+                $current_fragment_start = $last_fragment_end;
+                $current_fragment_length = $len_context_before + $len_current_search_string + $len_context_after;
+
+                // Merge fragment with the previous fragment.
+                $last_teaser_part_index = count($teaser_parts) - 1;
+                $teaser_parts[$last_teaser_part_index] .= substr($teaser, $current_fragment_start, $current_fragment_length);
+            } else {
+                // Add a new separated fragment.
+                $current_fragment_length = $len_context_before + $len_current_search_string + $len_context_after;
+                $teaser_parts[] = substr($teaser, $current_fragment_start, $current_fragment_length);
+            }
+
+            // Advance the array pointer and process the next matching fragment.
+            $last_region = $current_region;
+            $current_region = next($regions);
+        }
+
+        $teaser = implode($glue, $teaser_parts);
+    }
+
+    // Inject syntax to highlight the matches of the search string in the teaser fragment.
+    $highlight_prefix = '<span class="matches-filter">';
+    $highlight_suffix = '</span>';
+
+    if ($match_count > 0) {
+        $replacement = $highlight_prefix . '$1' . $highlight_suffix;
+        $teaser = preg_replace($match_pattern, $replacement, $teaser);
+    }
+
+    return $teaser;
+}
+
+function _hs_admin_localize_query_conditions(SelectQueryInterface $query, $conditions = array())
+{
+    if (!$conditions) {
+        return $query;
+    }
+
+    foreach ($conditions as $field => $value) {
+        if (is_array($value) && isset($value['operator'])) {
+            $operator = $value['operator'];
+            $value = $value['value'];
+        } elseif (is_array($value)) {
+            $operator = 'IN';
+        } else {
+            $operator = '=';
+        }
+
+        $query->condition($field, $value, $operator);
+    }
+
+    return $query;
+}
+
+function _hs_admin_localize_get_url($fragments = array(), $as_array = FALSE)
+{
+    $parts = array('admin', 'config', 'regional', 'localize');
+
+    if (!is_array($fragments)) {
+        $fragments = array($fragments);
+    }
+
+    $path = array_merge($parts, $fragments);
+
+    if ($as_array) {
+        return $path;
+    }
+
+    return implode('/', array_merge($parts, $fragments));
+}

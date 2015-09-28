@@ -1,0 +1,36 @@
+#toolbar ul li,
+ul.tabs li,
+.item-list ul li,
+ul.contextual-links li {
+  padding: 0;
+
+  &:before {
+    @include before-reset;
+  }
+}
+
+div.messages {
+  background: none;
+  padding: 10px 15px;
+  border: none;
+  color: #fff;
+  font-weight: 400;
+  @include border-radius($borderRadius);
+  @include media-query-list-property(margin, $contentSpacing);
+
+  p, ul {
+    margin-bottom: 0;
+  }
+}
+
+div.status {
+  background-color: #04be5b;
+}
+
+div.warning {
+  background-color: #ff9948;
+}
+
+div.error {
+  background-color: #d2335c;
+}

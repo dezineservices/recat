@@ -1,0 +1,109 @@
+#recatHeadliner {
+  text-align: center;
+  background: #447390;
+  height: 600px;
+  color: #fff;
+  overflow: hidden;
+  position: relative;
+  z-index: 1;
+
+  .bg {
+    left: 0;
+    right: 0;
+    top: 0;
+    height: 670px;
+    position: fixed;
+    background: transparent no-repeat center bottom;
+    background-size: 100% auto;
+    pointer-events: none;
+    z-index: 0;
+    @include transform(translateZ(0));
+
+    .toolbar-drawer & {
+      height: 734px;
+    }
+  }
+
+  .tbl {
+    height: inherit;
+  }
+
+  .title {
+    margin: 0 0 8px;
+    font-size: 65px;
+  }
+
+  .content {
+    font-size: 125%;
+    line-height: 1.5;
+  }
+
+  .actions {
+    margin: 68px 0 0;
+  }
+  
+  .btn {
+    text-transform: uppercase;
+    font-weight: 500;
+    font-size: 15px;
+    border: 1px solid #fff;
+    padding: 13px 20px 12px;
+    @include border-radius(24px);
+  }
+
+  a.btn {
+    color: #fff;
+
+    &:hover {
+      background: #fff;
+      color: $linkColor;
+    }
+  }
+
+  .icons {
+    position: absolute;
+    bottom: 30px;
+    left: 50%;
+    margin: 0 0 0 -7px;
+
+    .icon {
+      position: absolute;
+      width: 14px;
+      height: 8px;
+      bottom: 0;
+      left: 0;
+      background-position: -35px 0;
+      opacity: 1;
+      @include animation(fade 3s infinite .6s);
+
+      .cssanimations & {
+        opacity: 0;
+      }
+    }
+
+    &:before,
+    &:after {
+      @include before-element;
+      width: 14px;
+      height: 8px;
+      background-position: -35px 0;
+      left: 0;
+
+      .cssanimations & {
+        opacity: 0;
+      }
+    }
+
+    &:before {
+      bottom: 16px;
+      opacity: .3;
+      @include animation(fade 3s infinite);
+    }
+
+    &:after {
+      bottom: 8px;
+      opacity: .6;
+      @include animation(fade 3s infinite .3s);
+    }
+  }
+}

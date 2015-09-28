@@ -1,0 +1,121 @@
+<?php
+
+/**
+ * Regroup all CSS into one group
+ * 
+ * @param type $css
+ */
+function hs_enhancements_css_alter(&$css)
+{
+    uasort($css, 'drupal_sort_css_js');
+    $i = 0;
+    foreach ($css as $name => $style) {
+        $i++;
+        $css[$name]['weight'] = ($style['type'] == 'external' ? $i + 100 : $i);
+        $css[$name]['group'] = CSS_DEFAULT;
+        $css[$name]['every_page'] = true;
+    }   
+}
+
+/**
+ * Regroup all JS into one group
+ * 
+ * @param type $javascript
+ */
+function hs_enhancements_js_alter(&$javascript)
+{
+    uasort($javascript, 'drupal_sort_css_js');
+    $i = 0;
+    foreach ($javascript as $name => $script) {
+        $javascript[$name]['weight'] = $i++;
+        $javascript[$name]['group'] = JS_DEFAULT;
+        $javascript[$name]['every_page'] = true;
+    }
+}
+
+function hs_enhancements_library()
+{
+    module_load_include('inc', 'hs_enhancements', 'includes/hs_enhancements.datepicker');
+
+    $path = drupal_get_path('module', 'hs_enhancements');
+    $libraries['hs_enhancements_datepicker'] = array(
+        'title' => 'Hs Enhancements Datepicker',
+        'version' => '0.1',
+        'js' => array(
+            $path . '/js/vendor/zebra_datepicker.min.js' => array('type' => 'file'),
+            $path . '/js/hs_enhancements.js' => array('type' => 'file'),
+            array(
+                'type' => 'setting',
+                'data' => array(
+                    'hsEnhancements' => array(
+                        'datepicker' => array(
+                            'months' => _hs_enhancements_month_names(),
+                            'months_abbr' => _hs_enhancements_month_names_abbr(),
+                            'days' => _hs_enhancements_week_days(),
+                            'days_abbr' => _hs_enhancements_week_days_abbr(2),
+                            'today' => t('Today', array(), array('context' => 'datepicker_today')),
+                        ),
+                    ),
+                ),
+            ),
+        ),
+        'css' => array(
+            $path . '/css/vendor/zebra_datepicker.css' => array('type' => 'file'),
+        ),
+    );
+
+    return $libraries;
+}
+
+/**
+ * Disable access to user reset password form
+ *
+ * @param $items
+ */
+function hs_enhancements_menu_alter(&$items)
+{
+    if (isset($items['user/password'])) {
+        unset($items['user/password']);
+    }
+}
+
+function hs_enhancements_form_alter(&$form, &$form_state, $form_id)
+{
+    if (strpos($form_id, 'webform') !== false) {
+        form_load_include($form_state, 'inc', 'hs_enhancements', 'includes/hs_enhancements.datepicker');
+        _hs_enhancements_datepicker_transform_date($form);
+    }
+
+    if (strpos($form_id, 'field_ui_field_edit_form') !== false) {
+        form_load_include($form_state, 'inc', 'hs_enhancements', 'includes/hs_enhancements.field');
+        _hs_enhancements_field_settings_form($form, $form_state);
+    }
+}
+
+function hs_enhancements_field_info_alter(&$info)
+{
+    module_load_include('inc', 'hs_enhancements', 'includes/hs_enhancements.field');
+
+    foreach ($info as $field_key => $field_info) {
+        if (!isset($field_info['settings'])) {
+            continue;
+        }
+
+        $info[$field_key]['settings']['template'] = _hs_enhancements_field_get_default_template();
+    }
+}
+
+function hs_enhancements_preprocess_field(&$variables, $hook)
+{
+    $field_info = field_info_field($variables['element']['#field_name']);
+    if (!isset($field_info['settings']) || !isset($field_info['settings']['template'])) {
+        return;
+    }
+
+    if ($field_info['settings']['template'] === 'full') {
+        return;
+    }
+
+    $variables['theme_hook_suggestions'] = array_merge(
+        array(sprintf('field__%s', $field_info['settings']['template'])), $variables['theme_hook_suggestions']);
+}

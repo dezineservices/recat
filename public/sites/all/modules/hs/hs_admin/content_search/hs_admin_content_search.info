@@ -1,0 +1,6 @@
+name = Admin content search
+description = Allows you to search for nodes in the backend
+package = Hs
+core = 7.x
+
+dependencies[] = hs_admin

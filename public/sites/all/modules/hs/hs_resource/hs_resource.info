@@ -1,0 +1,5 @@
+name = Resource Manager
+description = Provides a resource manager for all labels used within modules and theme.
+package = Hs
+core = 7.x
+version = 7.x-0.1

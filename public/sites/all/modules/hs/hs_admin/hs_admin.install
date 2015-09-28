@@ -1,0 +1,19 @@
+<?php
+
+function hs_admin_install()
+{
+    static $schema;
+
+    $schema = drupal_get_schema('menu_links', !isset($schema));
+    if (!db_field_exists('menu_links', 'link_css_class')) {
+        db_add_field('menu_links', 'link_css_class', $schema['fields']['link_css_class']);
+    }
+
+    if (!db_field_exists('menu_links', 'target_blank')) {
+        db_add_field('menu_links', 'target_blank', $schema['fields']['target_blank']);
+    }
+
+    if (!db_field_exists('menu_links', 'link_anchor')) {
+        db_add_field('menu_links', 'link_anchor', $schema['fields']['link_anchor']);
+    }
+}

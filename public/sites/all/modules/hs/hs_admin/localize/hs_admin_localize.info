@@ -1,0 +1,8 @@
+name = Content localization
+description = Provides an interface that centralizes different types of translations
+package = Hs
+core = 7.x
+
+files[] = hs_admin_localize.inc
+
+dependencies[] = hs_admin

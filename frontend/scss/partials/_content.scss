@@ -1,0 +1,118 @@
+@mixin content-styles {
+  ::-moz-selection {
+    background: $brandColor;
+    color: $brandColorInverse;
+
+  }
+
+  ::selection {
+    background: $brandColor;
+    color: $brandColorInverse;
+  }
+
+  // -Headings
+  // ---------------------------------------
+
+  h1, .h1 {
+    @include heading-styles($h1Size, $h1Spacing, $fontTitle, 400, #fff);
+    letter-spacing: -0.05em;
+  }
+
+  h2, .h2 {
+    @include heading-styles($h2Size, $h2Spacing);
+    letter-spacing: -0.05em;
+  }
+
+  h3, .h3 {
+    @include heading-styles($h3Size, $h3Spacing);
+    letter-spacing: -0.05em;
+  }
+
+  h4, .h4 {
+    @include heading-styles($h4Size, $h4Spacing);
+    letter-spacing: -0.05em;
+  }
+
+  h5, .h5 {
+    @include heading-styles($h5Size, $h5Spacing);
+    letter-spacing: -0.05em;
+  }
+
+  h6, .h6 {
+    @include heading-styles($h6Size, $h6Spacing);
+    letter-spacing: -0.05em;
+  }
+
+  // -Content (inline)
+  // ---------------------------------------
+
+  strong, b {
+    font-weight: 700;
+  }
+
+  em, i {
+    font-style: italic;
+  }
+
+  u {
+    text-decoration: underline;
+  }
+
+  sub {
+    vertical-align: sub;
+  }
+
+  sup {
+    vertical-align: super;
+  }
+
+  small {
+    font-size: 70%;
+  }
+
+  // -Content (block)
+  // ---------------------------------------
+
+  p {
+    @include media-query-list-property(margin, $paragraphSpacing);
+  }
+
+  ul {
+    @include media-query-list-property(margin, $unorderedListSpacing);
+
+    li {
+      padding: 0 0 0 22px;
+
+      &:before {
+        @include before-element('•');
+        margin: 0 0 0 -22px;
+        color: #04be5b;
+        font-size: 34px;
+        line-height: 30px;
+      }
+    }
+  }
+
+  ol {
+    list-style: decimal outside none;
+    @include media-query-list-property(margin, $orderedlistSpacing);
+  }
+
+  table {
+    @include media-query-list-property(margin, $tableSpacing);
+  }
+
+  iframe {
+    width: 100%;
+  }
+
+  // -Links
+  // ---------------------------------------
+
+  a {
+    text-decoration: none;
+    @include link-colors($linkColor, $linkColorHover, $linkColorHover, $linkColorVisited, $linkColorHover);
+  }
+}
+
+@include content-styles;

@@ -1,0 +1,109 @@
+@mixin legacy-grid-row($gridClass: ".row", $grid: $gridRowWidth, $columns: $gridColumns, $gutter: $gridColumnGutter) {
+    // Row
+    #{$gridClass} {
+        width: $grid;
+        max-width: $grid;
+        min-width: $grid;
+        margin-left: auto;
+		margin-right: auto;
+        *zoom: 1;
+        
+        #{$gridClass} {
+            width: auto;
+            max-width: none;
+            min-width: 0;
+            margin-left: #{($gutter / 2) * -1}px;
+            margin-right: #{($gutter / 2) * -1}px;
+        }
+        
+        &:before,
+        &:after {
+            content: " "; 
+            display: table;
+        }
+        
+        &:after {
+            clear: both;
+        }
+    }
+    
+    // Columns
+    .column,
+    .columns {
+        float: left;
+        padding-left: #{$gutter / 2}px;
+        padding-right: #{$gutter / 2}px;
+        position: relative;
+    }
+    
+    [class*="column"] + [class*="column"]:last-child {
+        float: right;
+    }
+    
+    [class*="column"] + [class*="column"].end { 
+        float: left; 
+    }
+}
+
+@mixin legacy-grid-columns($columnPrefix: 'medium', $grid: $gridRowWidth, $columns: $gridColumns, $gridClass: ".row") {
+    #{$gridClass} {
+        &.#{$columnPrefix}-collapse .column,
+        &.#{$columnPrefix}-collapse .columns {
+            padding: 0;
+        }
+        
+        &.#{$columnPrefix}-collapse {
+            margin: 0;
+        }
+    }
+    
+    .column,
+    .columns {
+        &.#{$columnPrefix}-centered {
+            float: none;
+            margin: 0 auto;
+        }
+    }
+    
+    @if $columnPrefix == 'small' {
+        @for $i from 1 through $columns - 1 {
+            .#{$columnPrefix}-#{$i} {
+                min-height: 1px;
+            }
+        }
+    }
+    
+    @for $i from 1 through $columns {
+        // Column sizes
+        .#{$columnPrefix}-#{$i},
+        .row .#{$columnPrefix}-#{$i} {
+            width: percentage($i / $columns);
+        }
+        
+        // Column offsets
+        .#{$columnPrefix}-offset-#{$i} {
+            margin-left: percentage($i / $columns);
+        }
+        
+        // Column pulls
+        .#{$columnPrefix}-pull-#{$i} {
+            right: percentage($i / $columns);
+        }
+        
+        // Column pushes
+        .#{$columnPrefix}-push-#{$i} {
+            left: percentage($i / $columns);
+        }
+    }
+}
+
+.ie8 {
+	body {
+		min-width: $gridRowWidth;
+	}
+
+	@include legacy-grid-row;
+	@include legacy-grid-columns('small');
+	@include legacy-grid-columns;
+	@include legacy-grid-columns('large');
+}

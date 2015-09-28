@@ -1,0 +1,44 @@
+@mixin debugGrid {
+  #debugGrid {
+    position: fixed;
+    width: 100%;
+    height: 100%;
+    left: 0;
+    top: 0;
+    z-index: 999;
+
+    &.hide {
+      display: none;
+    }
+  }
+
+  .debug-row {
+    @include grid-row();
+    z-index: 9998;
+    height: 100%;
+
+    .column,
+    .columns {
+      height: 100%;
+      background: rgba(255, 0, 0, .1);
+      box-shadow: rem-calc($gridColumnGutter / 2) 0 0 rgba(255, 255, 255, .5) inset, rem-calc($gridColumnGutter / 2) * -1 0 0 rgba(255, 255, 255, .5) inset
+    }
+  }
+
+  .debug-row-trigger {
+    background: rgba(255, 0, 0, .1);
+    text-transform: uppercase;
+    display: block;
+    position: fixed;
+    right: 10px;
+    bottom: 0;
+    padding: 5px 8px;
+    cursor: pointer;
+    color: #000;
+    z-index: 9999;
+  }
+}
+
+@if $useDebugGrid == true {
+  @include debugGrid;
+}

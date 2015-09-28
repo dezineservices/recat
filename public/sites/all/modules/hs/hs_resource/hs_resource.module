@@ -1,0 +1,390 @@
+<?php
+
+define('HS_RESOURCE_ALLOWED_TYPES', 'plain|markup');
+
+/**
+ *  Implements hook_init()
+ */
+function hs_resource_init()
+{
+    drupal_add_css(
+        drupal_get_path('module', 'hs_resource') . '/css/hs_resource.css');
+}
+
+/**
+ * Implements hook_menu()
+ * 
+ * @return string
+ */
+function hs_resource_menu()
+{
+    $items = array();
+    $items[_hs_resource_get_url()] = array(
+        'title' => 'Resources',
+        'description' => 'Resource translation management.',
+        'access arguments' => array('translate content'),
+        'page callback' => 'hs_resource_admin_page',
+        'type' => MENU_LOCAL_TASK,
+        'file' => 'hs_resource.admin.inc',
+    );
+    
+    $items[_hs_resource_get_url('%hs_resource')] = array(
+        'title' => 'Translate',
+        'access arguments' => array('translate content'),
+        'page callback' => 'hs_resource_admin_translate_page',
+        'page arguments' => array(5),
+        'file' => 'hs_resource.admin.inc',
+    );
+    
+    $items[_hs_resource_get_url(array('%hs_resource', 'translate'))] = array(
+        'title' => 'Translate',
+        'type' => MENU_DEFAULT_LOCAL_TASK,
+        'context' => MENU_CONTEXT_INLINE,
+    );
+    
+    $items[_hs_resource_get_url('cleanup')] = array(
+        'title' => 'Cleanup untranslated resources',
+        'access arguments' => array('administer hs resource'),
+        'page callback' => 'drupal_get_form',
+        'page arguments' => array('hs_resource_admin_cleanup_form'),
+        'file' => 'hs_resource.admin.inc',
+    );
+    
+    return $items;
+}
+
+function hs_resource_menu_local_tasks_alter(&$data, $router_item, $root_path)
+{
+    if ($root_path == _hs_resource_get_url()) {
+        $item = menu_get_item(_hs_resource_get_url('cleanup'));
+        if ($item['access']) {
+            $data['actions']['output'][] = array(
+                '#theme' => 'menu_local_action',
+                '#link' => $item,
+            );
+        }
+    }
+}
+
+/**
+ * Implements hook_resource_permission()
+ * 
+ * @return type
+ */
+function hs_resource_permission()
+{
+    return array(
+        'administer hs resource' => array(
+            'title' => t('Administer resources'),
+        ),
+    );
+}
+
+function hs_resource_theme()
+{
+    return array(
+        'hs_resource' => array(
+            'render element' => 'element',
+            'template' => 'templates/hs_resource',
+        ),
+        'hs_resource_untranslated' => array(
+            'render element' => 'element',
+            'template' => 'templates/hs_resource_untranslated',
+        ),
+    );
+}
+
+/**
+ * Load a resource for a given resource id
+ * 
+ * @param type $rid
+ * @return boolean
+ */
+function hs_resource_load($rid = null)
+{
+    // load multiple resources at once
+    $rids = (isset($rid) ? array($rid) : array());
+    $resource = hs_resource_load_multiple($rids);
+    
+    if (!$resource) {
+        return false;
+    }
+    
+    // regroup different translations to one resource group
+    $resource_final = false;
+    foreach ($resource as $r_translation) {
+        if (!$resource_final) {
+            $resource_final = array(
+                'rid' => $r_translation->rid,
+                'term' => $r_translation->term,
+                'type' => $r_translation->type,
+                'file' => $r_translation->file,
+            );
+        }
+        
+        $resource_final[$r_translation->language] = (object) array(
+            'rtid' => $r_translation->rtid,
+            'language' => $r_translation->language,
+            'value' => $r_translation->value,
+            'format' => $r_translation->format,
+        );
+    }
+    
+    return (object) $resource_final;
+}
+
+/**
+ * Load multiple resources for given rids
+ * 
+ * @param type $rids
+ * @return type
+ */
+function hs_resource_load_multiple($rids = array())
+{
+    $query = db_select('hs_resource', 'r');
+
+    $query->leftJoin('hs_resource_translation', 't', 'r.rid = t.rid');
+    $query
+        ->fields('r', array())
+        ->fields('t', array('rtid', 'language', 'value', 'format'))
+        ->condition('r.rid', $rids, 'IN');
+    
+    return $query->execute()->fetchAll();
+}
+
+/**
+ * Load a resource by term
+ * 
+ * @param type $term
+ * @return type
+ */
+function hs_resource_load_by_term($term)
+{
+    $query = db_select('hs_resource', 'r');
+    
+    $query
+        ->fields('r', array())
+        ->condition('r.term', $term);
+    
+    return $query->execute()->fetch();
+}
+
+/**
+ * Save a resource object into the database
+ * 
+ * @param type $resource
+ * @return boolean
+ */
+function hs_resource_save($resource)
+{
+    $transaction = db_transaction();
+    
+    try {
+        if ($resource->rid) {
+            drupal_write_record('hs_resource', $resource, 'rid');
+        } else {
+            drupal_write_record('hs_resource', $resource);
+        }
+    } catch (Exception $e) {
+        $transaction->rollback();
+        watchdog_exception('hs_resource', $e, null, WATCHDOG_ERROR);
+        return false;
+    }
+    
+    return $resource;
+}
+
+/**
+ * Save translation values of a resource
+ * 
+ * @global type $user
+ * @param type $r_translation
+ * @param type $resource
+ * @return boolean
+ */
+function hs_resource_save_translation($r_translation, $resource)
+{
+    global $user;
+
+    $log = '';
+    $transaction = db_transaction();
+    
+    try {
+        if ($r_translation->rtid) {
+            drupal_write_record('hs_resource_translation', $r_translation, 'rtid');
+            $log = 'Updated resource translation %term by user id %uid';
+        } else {
+            drupal_write_record('hs_resource_translation', $r_translation);
+            $log = 'Add new resource translation %term by user id %uid';
+        }
+    } catch (Exception $e) {
+        $transaction->rollback();
+        watchdog_exception('hs_resource', $e, null, WATCHDOG_ERROR);
+        return false;
+    }
+    
+    watchdog('hs_resource', $log, array('%term' => $resource->term, '%uid' => $user->uid), WATCHDOG_INFO);
+    return $r_translation;
+}
+
+/**
+ * Get all resources for a given language. 
+ * Use active language is no language is given.
+ * 
+ * @global type $language
+ * @param type $lang
+ * @return type
+ */
+function hs_resource_get_resources($lang = false)
+{
+    global $language;
+    
+    if (!$lang) {
+        $lang = $language->language;
+    }
+    
+    $query = db_select('hs_resource', 'r');
+    $query->leftJoin('hs_resource_translation', 't', 't.rid = r.rid');
+    
+    $query->fields('r', array('rid', 'term', 'type'))
+        ->fields('t', array('value', 'format'))
+        ->condition('t.language', $lang);
+    
+    return $query->execute()->fetchAllAssoc('term');
+}
+
+/**
+ * Get resource for a given term in a given or active language
+ * 
+ * @global type $language
+ * @param type $term
+ * @param type $lang
+ * @return type
+ */
+function _hs_resource_get($term, $type = 'plain', $lang = false, $use_contextual = true, $reset = false)
+{
+    global $language;
+    
+    if (!$lang) {
+        $lang = $language->language;
+    }
+    
+    $resources = &drupal_static(__FUNCTION__, false);
+    if (!$resources || $reset) {
+        $resources = hs_resource_get_resources($lang);
+    }
+    
+    if (!isset($resources[$term])) {
+        $debug_trace = debug_backtrace();
+        $allowed_types = explode('|', HS_RESOURCE_ALLOWED_TYPES);
+        
+        if (!in_array($type, $allowed_types)) {
+            $type = reset($allowed_types);
+        }
+        
+        $resource = _hs_resource_add($term, $type, reset($debug_trace));
+        $resource->untranslated = true;
+        
+        $build = _hs_resource_renderable_array($resource);
+        if (!$use_contextual) {
+            unset($build['#contextual_links']);
+        }
+
+        return drupal_render($build);
+    }
+    
+    $build = _hs_resource_renderable_array($resources[$term]);
+    if (!$use_contextual) {
+        unset($build['#contextual_links']);
+    }
+    
+    return drupal_render($build);
+}
+
+function _hs_resource_renderable_array($resource)
+{
+    $build = array(
+        '#theme' => sprintf(
+            'hs_resource%s', isset($resource->untranslated) ? '_untranslated': ''),
+        '#resource' => $resource,
+        '#contextual_links' => array(
+            'hs_resource' => array(
+                'admin/config/regional/translate/resources',
+                array($resource->rid),
+            ),
+        ),
+    );
+    
+    return $build;
+}
+
+/**
+ * Add undefined resource into the database
+ * 
+ * @param type $term
+ * @param type $format
+ * @param type $caller
+ * @return boolean
+ */
+function _hs_resource_add($term, $type, $caller)
+{   
+    if ($resource = hs_resource_load_by_term($term)) {
+        return $resource;
+    }
+    
+    $found = false;
+    $file = array();
+    
+    foreach (explode(DIRECTORY_SEPARATOR, $caller['file']) as $path) {
+        if ($path === 'sites') {
+            $found = true;
+        }
+        
+        if (!$found) {
+            continue;
+        }
+        
+        $file[] = $path;
+    }
+    
+    $resource = (object) array(
+        'rid' => null,
+        'term' => $term,
+        'type' => $type,
+        'file' => implode(DIRECTORY_SEPARATOR, $file),
+    );
+    
+    return hs_resource_save($resource);
+}
+
+function _hs_resource_get_url($fragments = array())
+{
+    $parts = array('admin', 'config', 'regional', 'translate', 'resources');
+    
+    if (!is_array($fragments)) {
+        $fragments = array($fragments);
+    }
+    
+    return implode('/', array_merge($parts, $fragments));
+}
+
+function template_preprocess_hs_resource(&$variables)
+{
+    $resource = $variables['element']['#resource'];
+    $variables['classes_array'][] = sprintf('hs-resource-%s', $resource->type);
+    
+    if ($resource->type === 'markup') {
+        $variables['resource'] = check_markup(
+            $resource->value, $resource->format);
+    } else {
+        $variables['resource'] = nl2br(filter_xss($resource->value));
+    }
+}
+
+function template_preprocess_hs_resource_untranslated(&$variables)
+{
+    $resource = $variables['element']['#resource'];
+    
+    $variables['classes_array'][] = sprintf('hs-resource-%s', $resource->type);
+    $variables['term'] = $resource->term;
+}

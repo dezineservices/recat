@@ -1,0 +1,11 @@
+name = Hs
+description = Hs (DigitasLBi Belgium) HTML5 base theme
+hidden = true
+
+core = 7.x
+engine = phptemplate
+
+settings[hs_grid_columns] = 12
+settings[hs_debug_grid] = 1
+
+scripts[] = design/scripts/debug.js

@@ -1,0 +1,87 @@
+// - Features
+// --------------------------------------
+
+$useDebugGrid: true;
+
+// - Grid
+// --------------------------------------
+
+$gridBaseSize: 20px;
+$gridRowWidth: 1200px;
+$gridColumnGutter: 30px;
+$gridColumns: 12;
+
+// - Breakpoints
+// --------------------------------------
+
+$breakpoints: (
+  (0, 680px), // 0 - 640px (mobile);
+  (680px, 800px), //640px - 800px (tablet);
+  (800px, 1280px), //800px x 1280px (normal);
+  (1280px) //1280px x ... (wide);
+);
+
+// - Paths
+// --------------------------------------
+
+$fontsPath: '';
+$imgPath: '../images';
+
+// - Fonts
+// --------------------------------------
+
+$fontMain: 'Roboto', sans-serif;
+$fontAlt: 'Roboto Condensed', sans-serif;
+$fontTitle: $fontAlt;
+$fontForm: $fontMain;
+
+// - Content
+// --------------------------------------
+
+$baseFontSize: 16px;
+$baseFontWeight: 100;
+$baseLineHeight: 1.9;
+$titleLineHeight: 1.3;
+
+$h1Size: '64px';
+$h2Size: '49px';
+$h3Size: '39px';
+$h4Size: '29px';
+$h5Size: '24px';
+$h6Size: '22px';
+
+// - Spacings
+// --------------------------------------
+
+$titleSpacing: '0 0 30px';
+$contentSpacing: '0 0 35px';
+
+$h1Spacing: $titleSpacing;
+$h2Spacing: $titleSpacing;
+$h3Spacing: $titleSpacing;
+$h4Spacing: $titleSpacing;
+$h5Spacing: $titleSpacing;
+$h6Spacing: $titleSpacing;
+
+$paragraphSpacing: $contentSpacing;
+$unorderedListSpacing: $contentSpacing;
+$orderedlistSpacing: '0 0 35px 24px';
+$tableSpacing: $contentSpacing;
+
+// - Colors
+// --------------------------------------
+
+$backgroundBase: #3d4d65;
+
+$brandColor: #0082d5;
+$brandColorInverse: #fff;
+
+$fontColorBase: #54657e;
+$fontColorTitle: #3d4d65;
+
+$linkColor: #0082d5;
+$linkColorAlt: $fontColorTitle;
+$linkColorHover: adjust-lightness($linkColor, 15%);
+$linkColorVisited: $linkColor;
+
+$borderRadius: 6px;

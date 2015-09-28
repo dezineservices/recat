@@ -1,0 +1,22 @@
+name = Recat
+description = Recat Drupal theme
+base theme = hs
+
+core = 7.x
+engine = phptemplate
+
+regions[page_top] = Page top
+regions[header] = Header
+regions[content_top] = Content top
+regions[content] = Content
+regions[content_bottom] = Content bottom
+regions[page_bottom] = Page bottom
+
+settings[hs_grid_columns] = 12
+settings[hs_debug_grid] = 1
+
+stylesheets[all][] = design/css/libraries.css
+stylesheets[all][] = design/css/default.css
+stylesheets[print][] = design/css/print.css
+
+scripts[] = design/scripts/functions.js

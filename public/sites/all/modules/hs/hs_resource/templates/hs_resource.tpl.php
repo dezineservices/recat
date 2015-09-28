@@ -1,0 +1,1 @@
+<?php if($title_suffix): ?><div class="<?php print $classes; ?>"><?php print render($title_suffix); ?><?php endif; ?><?php print $resource; ?><?php if($title_suffix): ?></div><?php endif;

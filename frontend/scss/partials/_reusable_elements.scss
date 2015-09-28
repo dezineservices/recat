@@ -1,0 +1,37 @@
+.sprite {
+  @extend %sprite;
+}
+
+.sprite-before {
+  &:before {
+    @extend %sprite;
+  }
+}
+
+.sprite-after {
+  &:after {
+    @extend %sprite;
+  }
+}
+
+.separator-line {
+  height: 5px;
+  background-position: -10px -107px;
+  background-repeat: repeat-x;
+}
+
+.width-full {
+  width: 100%;
+}
+
+.tbl {
+  display: table;
+}
+
+.tbl-c {
+  display: table-cell;
+}
+
+.valign {
+  vertical-align: middle;
+}
