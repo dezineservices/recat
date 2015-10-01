@@ -35,6 +35,7 @@
 </section>
 <?php endif; ?>
 
+<?php if (!$is_front): ?>
 <section id="main" role="main">
     <div class="row">
         <div class="columns small-12">
@@ -50,6 +51,7 @@
         </div>
     </div>
 </section>
+<?php endif; ?>
 
 <?php print render($page['content_bottom']); ?>
 

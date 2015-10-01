@@ -1,0 +1,108 @@
+<?php
+
+function recat_news_theme() {
+    return array(
+        'recat_news_latest_news' => array(
+            'template' => 'templates/latest-news',
+            'variables' => array(
+                'teasers' => array(),
+            ),
+        ),
+        'recat_news_teaser' => array(
+            'template' => 'templates/teaser',
+            'variables' => array(
+                'image' => null,
+                'post_date' => null,
+                'title' => null,
+                'content' => null,
+                'cta' => null,
+                'url' => null,
+            ),
+        ),
+    );
+}
+
+function recat_news_block_info() {
+    $blocks = array();
+    $blocks['recat_news_latest'] = array(
+        'info' => t('Latest news'),
+        'cache' => DRUPAL_CACHE_PER_ROLE,
+        'visibility' => BLOCK_VISIBILITY_LISTED,
+        'pages' => '<front>',
+    );
+
+    return $blocks;
+}
+
+function recat_news_block_configure($delta = '') {
+    switch ($delta) {
+        case 'recat_news_latest':
+            module_load_include('blocks.inc', 'recat_news', 'recat_news');
+            return _recat_news_block_latest_configure($delta);
+
+    }
+}
+
+function recat_news_block_save($delta = '', $edit = array()) {
+    switch ($delta) {
+        case 'recat_news_latest':
+            module_load_include('blocks.inc', 'recat_news', 'recat_news');
+            return _recat_news_block_latest_save($edit, $delta);
+
+    }
+}
+
+function recat_news_block_view($delta = '') {
+    switch ($delta) {
+        case 'recat_news_latest':
+            module_load_include('blocks.inc', 'recat_news', 'recat_news');
+            return array(
+                'content' => _recat_news_block_latest_view($delta),
+            );
+    }
+}
+
+function recat_news_image_default_styles() {
+    $styles = array();
+    $styles['recat_news_teaser'] = array(
+        'label' => 'News teaser (370x250)',
+        'name' => 'recat_news_teaser',
+        'storage' => IMAGE_STORAGE_NORMAL,
+        'effects' => array(
+            array(
+                'name' => 'image_scale_and_crop',
+                'data' => array(
+                    'width' => 370,
+                    'height' => 250,
+                    'upscale' => 1,
+                ),
+                'weight' => 0,
+            ),
+        ),
+    );
+
+    return $styles;
+}
+
+function _recat_news_get_settings($key) {
+    return variable_get($key, false);
+}
+
+function _recat_news_get_nodes($limit = null, $order_by = 'created', $order_direction = 'DESC') {
+    global $language;
+
+    $query = db_select('node', 'n');
+    $query
+        ->fields('n', array('nid'))
+        ->condition('status', 1)
+        ->condition('language', $language->language)
+        ->condition('type', 'news')
+        ->orderBy($order_by, $order_direction)
+        ->addTag('node_access');
+
+    if ($limit) {
+        $query->range(0, $limit);
+    }
+
+    return $query->execute()->fetchAllAssoc('nid');
+}

@@ -12,6 +12,28 @@ function recat_blocks_theme() {
                 'url' => null,
             ),
         ),
+        'recat_blocks_quick_access' => array(
+            'template' => 'templates/quick-access',
+            'variables' => array(
+                'boxes' => array(),
+            ),
+        ),
+        'recat_blocks_quick_access_box' => array(
+            'template' => 'templates/quick-access-box',
+            'variables' => array(
+                'title' => '',
+                'content' => '',
+                'icon' => '',
+                'url' => '',
+                'more_info' => '',
+            ),
+        ),
+        'recat_blocks_facts' => array(
+            'template' => 'templates/facts',
+            'variables' => array(
+                'facts' => array(),
+            ),
+        ),
     );
 }
 
@@ -19,6 +41,20 @@ function recat_blocks_block_info() {
     $blocks = array();
     $blocks['recat_blocks_headliner'] = array(
         'info' => t('Headliner'),
+        'cache' => DRUPAL_CACHE_PER_ROLE,
+        'visibility' => BLOCK_VISIBILITY_LISTED,
+        'pages' => '<front>',
+    );
+
+    $blocks['recat_blocks_quick_access'] = array(
+        'info' => t('Quick access'),
+        'cache' => DRUPAL_CACHE_PER_ROLE,
+        'visibility' => BLOCK_VISIBILITY_LISTED,
+        'pages' => '<front>',
+    );
+
+    $blocks['recat_blocks_facts'] = array(
+        'info' => t('Facts'),
         'cache' => DRUPAL_CACHE_PER_ROLE,
         'visibility' => BLOCK_VISIBILITY_LISTED,
         'pages' => '<front>',
@@ -32,22 +68,32 @@ function recat_blocks_block_configure($delta = '') {
         case 'recat_blocks_headliner':
             module_load_include('headliner.inc', 'recat_blocks', 'includes/recat_blocks');
             return _recat_blocks_headliner_configure($delta);
+        case 'recat_blocks_quick_access':
+            module_load_include('quick_access.inc', 'recat_blocks', 'includes/recat_blocks');
+            return _recat_blocks_quick_access_configure($delta);
+        case 'recat_blocks_facts':
+            module_load_include('facts.inc', 'recat_blocks', 'includes/recat_blocks');
+            return _recat_blocks_facts_configure($delta);
 
     }
 }
 
-function recat_blocks_block_save($delta = '', $edit = array())
-{
+function recat_blocks_block_save($delta = '', $edit = array()) {
     switch ($delta) {
         case 'recat_blocks_headliner':
             module_load_include('headliner.inc', 'recat_blocks', 'includes/recat_blocks');
             return _recat_blocks_headliner_save($edit, $delta);
+        case 'recat_blocks_quick_access':
+            module_load_include('quick_access.inc', 'recat_blocks', 'includes/recat_blocks');
+            return _recat_blocks_quick_access_save($edit, $delta);
+        case 'recat_blocks_facts':
+            module_load_include('facts.inc', 'recat_blocks', 'includes/recat_blocks');
+            return _recat_blocks_facts_save($edit, $delta);
 
     }
 }
 
-function recat_blocks_block_view($delta = '')
-{
+function recat_blocks_block_view($delta = '') {
     switch ($delta) {
         case 'recat_blocks_headliner':
             module_load_include('headliner.inc', 'recat_blocks', 'includes/recat_blocks');
@@ -55,16 +101,24 @@ function recat_blocks_block_view($delta = '')
                 'title' => '<none>',
                 'content' => _recat_blocks_headliner_view($delta),
             );
+        case 'recat_blocks_quick_access':
+            module_load_include('quick_access.inc', 'recat_blocks', 'includes/recat_blocks');
+            return array(
+                'content' => _recat_blocks_quick_access_view($delta),
+            );
+        case 'recat_blocks_facts':
+            module_load_include('facts.inc', 'recat_blocks', 'includes/recat_blocks');
+            return array(
+                'content' => _recat_blocks_facts_view($delta),
+            );
     }
 }
 
-function _recat_blocks_get_settings($key)
-{
+function _recat_blocks_get_settings($key) {
     return variable_get($key, false);
 }
 
-function _recat_blocks_get_nodes($type = null)
-{
+function _recat_blocks_get_nodes($type = null) {
     $language = language_default();
 
     $query = db_select('node', 'n');
@@ -82,8 +136,7 @@ function _recat_blocks_get_nodes($type = null)
     return $query->execute()->fetchAllAssoc('nid');
 }
 
-function _recat_blocks_handle_managed_file($previous_file, $new_file)
-{
+function _recat_blocks_handle_managed_file($previous_file, $new_file) {
     if ($previous_file === $new_file) {
         return false;
     }

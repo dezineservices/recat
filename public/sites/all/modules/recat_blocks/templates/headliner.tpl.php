@@ -8,7 +8,7 @@
                 <p class="content"><?php print $content; ?></p>
 
                 <p class="actions">
-                    <a href="<?php print $url; ?>" data-target="<?php print str_replace('#', '', $url); ?>" class="btn"><?php print $cta; ?></a>
+                    <a href="<?php print $url; ?>" data-target="<?php print str_replace('#', '', $url); ?>" class="btn-border"><?php print $cta; ?></a>
                 </p>
             </div>
         </div>
