@@ -1,7 +1,13 @@
 a {
   @include transition(color .2s ease-in-out);
 
-  &.btn {
+  &.btn, &.btn-border {
+    @include transition(background .2s ease-in-out);
+  }
+}
+
+.pager {
+  a {
     @include transition(background .2s ease-in-out);
   }
 }

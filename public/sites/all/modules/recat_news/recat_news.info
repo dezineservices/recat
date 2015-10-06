@@ -1,7 +1,8 @@
-name = News
+name = Recat News
 description = Provides news content type
 package = Recat
 core = 7.x
 version = 7.x-0.1
 
 dependencies[] = hs_resource
+dependencies[] = recat_core

@@ -35,21 +35,27 @@
 </section>
 <?php endif; ?>
 
-<?php if (!$is_front): ?>
+<?php if (!empty($tabs)): ?>
+<div class="authoring-tabs">
+    <div class="row">
+        <div class="columns small-12">
+            <?php print render($tabs); ?></div>
+        </div>
+    </div>
+</div>
+<?php endif; ?>
+
+<?php if ($has_main_content): ?>
 <section id="main" role="main">
     <div class="row">
         <div class="columns small-12">
-            <?php if (!empty($tabs)): ?>
-                <div class="tabs"><?php print render($tabs); ?></div>
-            <?php endif; ?>
-            <?php print render($page['help']); ?>
-            <?php if ($action_links): ?>
-                <ul class="action-links"><?php print render($action_links); ?></ul>
-            <?php endif; ?>
             <?php print $messages; ?>
             <?php print render($page['content']); ?>
         </div>
     </div>
+    <?php if (isset($block_reference)): ?>
+        <?php print drupal_render($block_reference); ?>
+    <?php endif; ?>
 </section>
 <?php endif; ?>
 

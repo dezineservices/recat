@@ -6,6 +6,57 @@
 
   .menu {
     margin: 0;
+
+    .menu {
+      line-height: 1.2;
+      white-space: nowrap;
+      position: absolute;
+      text-transform: none;
+      padding: 10px 0 0;
+      margin: 0 0 0 30px;
+      z-index: 99;
+      top: 100%;
+      display: none;
+
+      li {
+        float: none;
+        padding: 0;
+        margin: 0;
+        background: #fff;
+        border-top: 1px solid #cad3df;
+
+        &:before {
+          display: none;
+        }
+
+        &.first {
+          border: none;
+          padding: 6px 0 0;
+          @include border-radius($borderRadius $borderRadius 0 0);
+        }
+
+        &.last {
+          padding: 0 0 6px;
+          @include border-radius(0 0 $borderRadius);
+        }
+      }
+
+      a {
+        display: block;
+        padding: 16px 29px 15px;
+        @include transition(color .2s ease-in-out, background .2s ease-in-out, padding .1s ease-in-out);
+
+        &:hover,
+        &.active {
+          background: #eceff4;
+        }
+
+        &:hover {
+          padding-left: 32px;
+          padding-right: 26px;
+        }
+      }
+    }
   }
 
   li {
@@ -36,10 +87,16 @@
         height: 2px;
       }
     }
+
+    &.expanded:hover {
+      .menu {
+        display: block;
+      }
+    }
   }
 
   a {
-    color: $linkColorAlt;
+    color: $fontColorBase;
 
     &.active,
     &:hover {

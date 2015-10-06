@@ -1,0 +1,101 @@
+.pager {
+  font-size: 95%;
+  font-weight: 400;
+  text-align: center;
+  text-transform: uppercase;
+  background: #eceff4;
+  display: table;
+  margin: 0 auto;
+  padding: 0 100px 65px;
+
+  li {
+    display: inline-block;
+    margin: 0 5px;
+  }
+
+  a,
+  .pager-current {
+    width: 50px;
+    padding: 12px 0 10px;
+    display: inline-block;
+    overflow: hidden;
+    @include border-radius($borderRadius);
+  }
+
+  a {
+    color: $fontColorBase;
+    background: #fff;
+
+    &:hover {
+      background: $brandColor;
+      color: #fff;
+    }
+  }
+
+  .pager-current {
+    background: $brandColor;
+    color: #fff;
+  }
+
+  .pager-previous,
+  .pager-next {
+    position: absolute;
+
+    a {
+      position: relative;
+      width: 100px;
+      @include transition(padding .1s ease-in-out);
+
+      &:before {
+        content: " ";
+        position: absolute;
+        width: 16px;
+        height: 14px;
+        top: 50%;
+        margin: -7px 0 0;
+        @extend %sprite;
+        @include transition(transform .2s ease-in-out);
+      }
+    }
+  }
+
+  .pager-previous {
+    margin-left: -105px;
+
+    a {
+      padding-left: 25px;
+
+      &:before {
+        left: 17px;
+        background-position: left -20px;
+      }
+
+      &:hover {
+        padding-left: 0;
+
+        &:before {
+          @include transform(translateX(-300%));
+        }
+      }
+    }
+  }
+
+  .pager-next {
+    a {
+      padding-right: 25px;
+
+      &:before {
+        right: 17px;
+        background-position: -22px -20px;
+      }
+
+      &:hover {
+        padding-right: 0;
+
+        &:before {
+          @include transform(translateX(300%));
+        }
+      }
+    }
+  }
+}

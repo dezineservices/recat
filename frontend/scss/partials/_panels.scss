@@ -1,0 +1,46 @@
+$borderRadius: 5px;
+
+.panel {
+  background: #fff;
+  padding: 35px 30px 18px;
+  margin: 0 0 70px;
+  @include border-radius($borderRadius);
+
+  p {
+    margin: 0 0 14px;
+    font-size: 90%;
+  }
+
+  .label {
+    font-size: 80%;
+    font-weight: 400;
+    color: #8493a8;
+    text-transform: uppercase;
+    padding: 0 0 8px;
+    display: block;
+  }
+
+  .title {
+    font-size: 25px;
+    color: $fontColorTitle;
+    margin: 0 0 10px;
+  }
+
+  .narrow {
+    max-width: 70%;
+    margin-left: auto;
+    margin-right: auto;
+  }
+}
+
+.panel-image {
+  padding: 0;
+
+  .image {
+    @include border-radius($borderRadius $borderRadius 0 0);
+  }
+
+  .inner {
+    padding: 19px 30px 18px;
+  }
+}

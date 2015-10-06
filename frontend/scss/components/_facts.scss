@@ -1,0 +1,53 @@
+#recatFacts {
+  background: $brandColor url('#{$imgPath}/bg-scene-interior.jpg') no-repeat center center;
+  background-size: cover;
+  color: #fff;
+  text-transform: uppercase;
+
+  .block-title {
+    color: #fff;
+  }
+
+  .fact {
+    font-size: 20px;
+    font-weight: 400;
+    margin: 0 0 70px;
+
+    .number {
+      font-family: $fontAlt;
+      font-size: 65px;
+      line-height: .8;
+      padding: 0 0 0 60px;
+    }
+
+    .icon {
+      position: absolute;
+      margin: 1px 0 0 -60px;
+
+      &.unique_visits {
+        width: 48px;
+        height: 48px;
+        background-position: -168px top;
+      }
+
+      &.news_posts {
+        margin-top: 3px;
+        width: 46px;
+        height: 46px;
+        background-position: -125px -54px;
+      }
+
+      &.conference_docs {
+        width: 46px;
+        height: 48px;
+        background-position: -182px -54px;
+      }
+
+      &.project_files {
+        width: 41px;
+        height: 48px;
+        background-position: -223px top;
+      }
+    }
+  }
+}

@@ -14,6 +14,44 @@
   }
 }
 
+.btn {
+  font-size: 13px;
+  font-weight: 500;
+  text-transform: uppercase;
+  padding: 6px 19px 5px;
+  margin: 0 0 12px;
+  display: inline-block;
+  background: $linkColor;
+  letter-spacing: -.03em;
+  @include border-radius($borderRadius);
+
+  &:hover {
+    background: $linkColorHover;
+  }
+}
+
+a.btn {
+  color: #fff;
+}
+
+.btn-border {
+  text-transform: uppercase;
+  font-weight: 500;
+  font-size: 15px;
+  border: 1px solid #fff;
+  padding: 13px 20px 12px;
+  @include border-radius(24px);
+}
+
+a.btn-border {
+  color: #fff;
+
+  &:hover {
+    background: #fff;
+    color: $linkColor;
+  }
+}
+
 .separator-line {
   height: 5px;
   background-position: -10px -107px;
@@ -34,4 +72,12 @@
 
 .valign {
   vertical-align: middle;
+}
+
+.uppercase {
+  text-transform: uppercase;
+}
+
+.text-center {
+  text-align: center;
 }

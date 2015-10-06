@@ -1,0 +1,8 @@
+name = Recat Feedback
+description = Provides feedback form
+package = Recat
+core = 7.x
+version = 7.x-0.1
+
+dependencies[] = webform
+dependencies[] = hs_resource

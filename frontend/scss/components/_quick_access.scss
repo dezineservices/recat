@@ -1,0 +1,38 @@
+#recatQuickAccess {
+  .icon-bg {
+    width: 70px;
+    height: 70px;
+    display: block;
+    margin: 20px auto 55px;
+    background: $brandColor;
+    position: relative;
+    @include border-radius(50%);
+
+    .icon {
+      position: absolute;
+      left: 50%;
+      top: 50%;
+
+      &.pilots {
+        width: 26px;
+        height: 26px;
+        margin: -13px 0 0 -13px;
+        background-position: -63px -30px;
+      }
+
+      &.traffic {
+        width: 24px;
+        height: 36px;
+        margin: -18px 0 0 -12px;
+        background-position: -99px -29px;
+      }
+
+      &.regulators {
+        width: 29px;
+        height: 26px;
+        margin: -13px 0 0 -14px;
+        background-position: 0 -41px;
+      }
+    }
+  }
+}

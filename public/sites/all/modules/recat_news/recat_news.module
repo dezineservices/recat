@@ -1,7 +1,27 @@
 <?php
 
+function recat_news_menu() {
+    $items = array();
+    $items['admin/config/recat/news'] = array(
+        'title' => t('News settings'),
+        'description' => t('Change the different news settings.'),
+        'page callback' => 'drupal_get_form',
+        'page arguments' => array('recat_news_admin'),
+        'access arguments' => array('administer site configuration'),
+        'file' => 'recat_news.admin.inc',
+    );
+
+    return $items;
+}
+
 function recat_news_theme() {
     return array(
+        'recat_news_listing' => array(
+            'template' => 'templates/listing',
+            'variables' => array(
+                'teasers' => array(),
+            ),
+        ),
         'recat_news_latest_news' => array(
             'template' => 'templates/latest-news',
             'variables' => array(
@@ -24,6 +44,10 @@ function recat_news_theme() {
 
 function recat_news_block_info() {
     $blocks = array();
+    $blocks['recat_news'] = array(
+        'info' => t('News listing'),
+        'cache' => DRUPAL_CACHE_PER_ROLE,
+    );
     $blocks['recat_news_latest'] = array(
         'info' => t('Latest news'),
         'cache' => DRUPAL_CACHE_PER_ROLE,
@@ -36,6 +60,9 @@ function recat_news_block_info() {
 
 function recat_news_block_configure($delta = '') {
     switch ($delta) {
+        case 'recat_news':
+            module_load_include('blocks.inc', 'recat_news', 'recat_news');
+            return _recat_news_block_configure($delta);
         case 'recat_news_latest':
             module_load_include('blocks.inc', 'recat_news', 'recat_news');
             return _recat_news_block_latest_configure($delta);
@@ -45,6 +72,9 @@ function recat_news_block_configure($delta = '') {
 
 function recat_news_block_save($delta = '', $edit = array()) {
     switch ($delta) {
+        case 'recat_news':
+            module_load_include('blocks.inc', 'recat_news', 'recat_news');
+            return _recat_news_block_save($edit, $delta);
         case 'recat_news_latest':
             module_load_include('blocks.inc', 'recat_news', 'recat_news');
             return _recat_news_block_latest_save($edit, $delta);
@@ -54,6 +84,12 @@ function recat_news_block_save($delta = '', $edit = array()) {
 
 function recat_news_block_view($delta = '') {
     switch ($delta) {
+        case 'recat_news':
+            module_load_include('blocks.inc', 'recat_news', 'recat_news');
+            return array(
+                'title' => '<none>',
+                'content' => _recat_news_block_view($delta),
+            );
         case 'recat_news_latest':
             module_load_include('blocks.inc', 'recat_news', 'recat_news');
             return array(
@@ -84,14 +120,14 @@ function recat_news_image_default_styles() {
     return $styles;
 }
 
-function _recat_news_get_settings($key) {
-    return variable_get($key, false);
-}
-
-function _recat_news_get_nodes($limit = null, $order_by = 'created', $order_direction = 'DESC') {
+function _recat_news_get_nodes($limit = null, $usePager = false, $order_by = 'created', $order_direction = 'DESC') {
     global $language;
 
     $query = db_select('node', 'n');
+    if ($usePager) {
+        $query = $query->extend('PagerDefault');
+    }
+
     $query
         ->fields('n', array('nid'))
         ->condition('status', 1)
@@ -100,9 +136,43 @@ function _recat_news_get_nodes($limit = null, $order_by = 'created', $order_dire
         ->orderBy($order_by, $order_direction)
         ->addTag('node_access');
 
-    if ($limit) {
+    if ($usePager && $limit) {
+        $query->limit($limit);
+    } else if ($limit) {
         $query->range(0, $limit);
     }
 
     return $query->execute()->fetchAllAssoc('nid');
+}
+
+function _recat_news_get_teaser_view($node, $image_style = 'thumbnail', $date_format = 'medium', $max_chars = 150) {
+    $node_wrapper = entity_metadata_wrapper('node', $node);
+
+    $body = $node_wrapper->body->value();
+    $image = $node_wrapper->field_image->value();
+    $content = filter_xss($body['summary'] ? $body['summary'] : $body['value'], array());
+
+    return array(
+        '#theme' => 'recat_news_teaser',
+        '#image' => theme_image_style(array(
+            'style_name' => $image_style,
+            'path' => $image['uri'],
+            'width' => $image['width'],
+            'height' => $image['height'],
+            'title' => $image['title'],
+            'alt' => $image['alt'],
+            'attributes' => array(
+                'class' => array('image'),
+            ),
+        )),
+        '#post_date' => format_date($node->created, $date_format),
+        '#title' => $node_wrapper->title->value(),
+        '#content' => truncate_utf8($content, $max_chars, true, true),
+        '#cta' => _hs_resource_get('recat_news.teaser.read_more', 'plain', null, false),
+        '#url' => node_uri($node),
+    );
+}
+
+function _recat_news_get_settings($key = 'recat_news') {
+    return variable_get($key, false);
 }

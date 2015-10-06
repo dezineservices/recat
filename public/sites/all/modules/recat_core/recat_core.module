@@ -1,0 +1,16 @@
+<?php
+
+function recat_core_menu() {
+    $items = array();
+    $items['admin/config/recat'] = array(
+        'title' => t('Recat'),
+        'position' => 'right',
+        'weight' => -100,
+        'page callback' => 'system_admin_menu_block_page',
+        'access arguments' => array('administer site configuration'),
+        'file' => 'system.admin.inc',
+        'file path' => drupal_get_path('module', 'system'),
+    );
+
+    return $items;
+}
