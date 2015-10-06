@@ -46,7 +46,7 @@ function recat_news_block_info() {
     $blocks = array();
     $blocks['recat_news'] = array(
         'info' => t('News listing'),
-        'cache' => DRUPAL_CACHE_PER_ROLE,
+        'cache' => DRUPAL_NO_CACHE,
     );
     $blocks['recat_news_latest'] = array(
         'info' => t('Latest news'),
