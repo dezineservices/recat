@@ -45,19 +45,22 @@
 </div>
 <?php endif; ?>
 
-<?php if ($has_main_content): ?>
+
 <section id="main" role="main">
+    <?php if ($has_main_content): ?>
     <div class="row">
-        <div class="columns small-12">
-            <?php print $messages; ?>
+        <div id="sidebar" class="columns small-12 medium-3">
+            <?php print render($page['sidebar']); ?>
+        </div>
+        <div id="content" class="columns small-12 medium-9 large-push-1 large-7 end">
             <?php print render($page['content']); ?>
         </div>
     </div>
+    <?php endif; ?>
     <?php if (isset($block_reference)): ?>
         <?php print drupal_render($block_reference); ?>
     <?php endif; ?>
 </section>
-<?php endif; ?>
 
 <?php print render($page['content_bottom']); ?>
 

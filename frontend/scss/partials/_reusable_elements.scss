@@ -15,14 +15,14 @@
 }
 
 .btn {
-  font-size: 13px;
+  color: #fff;
+  font-size: 15px;
   font-weight: 500;
   text-transform: uppercase;
-  padding: 6px 19px 5px;
-  margin: 0 0 12px;
+  padding: 8px 42px 7px;
+  margin: 0 0 20px;
   display: inline-block;
   background: $linkColor;
-  letter-spacing: -.03em;
   @include border-radius($borderRadius);
 
   &:hover {
@@ -32,6 +32,21 @@
 
 a.btn {
   color: #fff;
+}
+
+.btn-bordered {
+  color: $linkColor;
+  border: 1px solid $linkColor;
+  background: transparent;
+
+  &:hover {
+    color: #fff;
+    background: $linkColor;
+  }
+}
+
+a.btn-bordered {
+  color: $linkColor;
 }
 
 .btn-border {

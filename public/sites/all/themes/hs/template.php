@@ -86,7 +86,7 @@ function _hs_menu_tree($menu_name) {
   global $language;
 
   $menu_item = menu_get_item();
-  $menu_tree = menu_tree_all_data($menu_name);
+  $menu_tree = menu_tree_all_data($menu_name, null, 2);
 
   foreach ($menu_tree as $key => $item) {
     if ($item['link']['language'] != $language->language) {

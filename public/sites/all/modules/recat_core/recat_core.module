@@ -14,3 +14,15 @@ function recat_core_menu() {
 
     return $items;
 }
+
+function recat_core_wysiwyg_editor_settings_alter(&$settings, $context) {
+    if ($context['profile']->editor !== 'ckeditor') {
+        return false;
+    }
+
+    $settings['contentsCss'] = sprintf(
+        '%s%s/design/css/ckeditor.css', base_path(), drupal_get_path('theme', 'recat'));
+
+    $settings['customConfig'] = sprintf(
+        '%s%s/ckeditor/config.js', base_path(), drupal_get_path('theme', 'recat'));
+}

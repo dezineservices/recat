@@ -12,8 +12,16 @@ function recat_preprocess_page(&$variables) {
     $variables['footer_copyright'] = str_replace(
         '{{YEAR}}', date('Y'), _hs_resource_get('global.footer_copyright', 'markup'));
 
-    if(isset($variables['page']['content']['system_main']['default_message'])) {
+    if (isset($variables['page']['content']['system_main']['default_message'])) {
         unset($variables['page']['content']['system_main']['default_message']);
+    }
+
+    $messages = theme('status_messages');
+    if (strlen($messages)) {
+        $variables['page']['content']['system_main']['messages'] = array(
+            '#weight' => -99,
+            '#markup' => $messages,
+        );
     }
 
     _recat_preprocess_page_tabs($variables);
@@ -71,6 +79,19 @@ function _recat_preprocess_page_main_content(&$variables) {
     $system_main = element_children($variables['page']['content']['system_main']);
     if (empty($system_main)) {
         $variables['has_main_content'] = false;
+        return;
+    }
+
+    if (isset($variables['node'])) {
+        $variables['has_main_content'] = false;
+        foreach (array('body', 'picture') as $field) {
+            if ($variables['node']->$field) {
+                $variables['has_main_content'] = true;
+                break;
+            }
+        }
+
+        return;
     }
 }
 

@@ -8,6 +8,7 @@ engine = phptemplate
 regions[page_top] = Page top
 regions[header] = Header
 regions[content_top] = Content top
+regions[sidebar] = Sidebar
 regions[content] = Content
 regions[content_bottom] = Content bottom
 regions[page_bottom] = Page bottom

@@ -1,7 +1,7 @@
 a {
   @include transition(color .2s ease-in-out);
 
-  &.btn, &.btn-border {
+  &.btn, &.btn-bordered, &.btn-border {
     @include transition(background .2s ease-in-out);
   }
 }
