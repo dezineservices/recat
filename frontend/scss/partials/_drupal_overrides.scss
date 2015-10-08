@@ -9,6 +9,11 @@ ul.contextual-links li {
   }
 }
 
+ul li.leaf,
+ul li.expanded {
+  list-style: none outside none;
+}
+
 .authoring-tabs {
   background: #fff;
   padding: 40px 0 0;

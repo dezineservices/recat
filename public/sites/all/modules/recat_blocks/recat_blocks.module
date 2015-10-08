@@ -34,6 +34,13 @@ function recat_blocks_theme() {
                 'facts' => array(),
             ),
         ),
+        'recat_blocks_submenu' => array(
+            'template' => 'templates/submenu',
+            'variables' => array(
+                'title' => array(),
+                'links' => array(),
+            ),
+        ),
     );
 }
 
@@ -60,6 +67,13 @@ function recat_blocks_block_info() {
         'pages' => '<front>',
     );
 
+    $blocks['recat_blocks_submenu'] = array(
+        'info' => t('Submenu'),
+        'cache' => DRUPAL_CACHE_PER_PAGE,
+        'visibility' => BLOCK_VISIBILITY_NOTLISTED,
+        'pages' => '<front>',
+    );
+
     return $blocks;
 }
 
@@ -74,6 +88,9 @@ function recat_blocks_block_configure($delta = '') {
         case 'recat_blocks_facts':
             module_load_include('facts.inc', 'recat_blocks', 'includes/recat_blocks');
             return _recat_blocks_facts_configure($delta);
+        case 'recat_blocks_submenu':
+            module_load_include('submenu.inc', 'recat_blocks', 'includes/recat_blocks');
+            return _recat_blocks_submenu_configure($delta);
 
     }
 }
@@ -89,6 +106,9 @@ function recat_blocks_block_save($delta = '', $edit = array()) {
         case 'recat_blocks_facts':
             module_load_include('facts.inc', 'recat_blocks', 'includes/recat_blocks');
             return _recat_blocks_facts_save($edit, $delta);
+        case 'recat_blocks_submenu':
+            module_load_include('submenu.inc', 'recat_blocks', 'includes/recat_blocks');
+            return _recat_blocks_submenu_save($edit, $delta);
 
     }
 }
@@ -110,6 +130,12 @@ function recat_blocks_block_view($delta = '') {
             module_load_include('facts.inc', 'recat_blocks', 'includes/recat_blocks');
             return array(
                 'content' => _recat_blocks_facts_view($delta),
+            );
+        case 'recat_blocks_submenu':
+            module_load_include('submenu.inc', 'recat_blocks', 'includes/recat_blocks');
+            return array(
+                'title' => '<none>',
+                'content' => _recat_blocks_submenu_view($delta),
             );
     }
 }

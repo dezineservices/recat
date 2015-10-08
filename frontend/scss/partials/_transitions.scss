@@ -6,7 +6,8 @@ a {
   }
 }
 
-.pager {
+.pager,
+#recatSubmenu {
   a {
     @include transition(background .2s ease-in-out);
   }

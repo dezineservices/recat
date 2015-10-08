@@ -6,7 +6,7 @@ input {
   margin: 0 0 25px;
   color: $fontColorBase;
   background: #eceff4;
-  border: 1px solid #cad3df;
+  border: 1px solid $neutralColor;
   outline: none;
   width: 100%;
   -webkit-appearance: none;
@@ -46,7 +46,7 @@ textarea {
   margin: 0 0 25px;
   color: $fontColorBase;
   background: #eceff4;
-  border: 1px solid #cad3df;
+  border: 1px solid $neutralColor;
   outline: none;
   width: 100%;
   height: 95px;
