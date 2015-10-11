@@ -1,5 +1,15 @@
 <?php
 
+define('RECAT_CORE_FILE_SALT', 'Y61N7a-[!S4c.h[F$%O6$wJW/5+,S3=(@obTl$P(JuI=Q$Tr[OI3.*?(2LX@y0 +');
+
+function recat_core_schema_alter(&$schema) {
+    $schema['file_managed']['fields']['hash'] = array(
+        'type' => 'varchar',
+        'length' => 32,
+        'not null' => false,
+    );
+}
+
 function recat_core_menu() {
     $items = array();
     $items['admin/config/recat'] = array(
@@ -15,6 +25,27 @@ function recat_core_menu() {
     return $items;
 }
 
+function recat_core_library() {
+    $path = drupal_get_path('module', 'recat_core');
+    $libraries['recat_core_angularjs'] = array(
+        'title' => 'Recat Core AngularJs',
+        'version' => '1.3.16',
+        'js' => array(
+            $path . '/js/vendor/angular.min.js' => array('type' => 'file'),
+        ),
+    );
+
+    return $libraries;
+}
+
+function recat_core_file_insert($file) {
+    if (!isset($file->fid)) {
+        return;
+    }
+
+    _recat_core_save_hash_for_fid($file->fid);
+}
+
 function recat_core_wysiwyg_editor_settings_alter(&$settings, $context) {
     if ($context['profile']->editor !== 'ckeditor') {
         return false;
@@ -25,4 +56,17 @@ function recat_core_wysiwyg_editor_settings_alter(&$settings, $context) {
 
     $settings['customConfig'] = sprintf(
         '%s%s/ckeditor/config.js', base_path(), drupal_get_path('theme', 'recat'));
+}
+
+function _recat_core_save_hash_for_fid($fid, $hash = null) {
+    return db_update('file_managed')
+        ->fields(array(
+            'hash' => $hash === null ? _recat_core_generate_hash_for_fid($fid) : $hash,
+        ))
+        ->condition('fid', $fid)
+        ->execute();
+}
+
+function _recat_core_generate_hash_for_fid($fid) {
+    return md5(RECAT_CORE_FILE_SALT . $fid);
 }

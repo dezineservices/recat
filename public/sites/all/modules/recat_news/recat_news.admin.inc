@@ -9,12 +9,17 @@ function recat_news_admin($form, &$form_state) {
         '#tree' => true,
     );
 
+    $items_per_page = array();
+    for ($i = 1; $i < 33; $i += 3) {
+        $items_per_page[$i - ($i === 1 ? 0 : 1)] = $i - ($i === 1 ? 0 : 1);
+    }
+
     $form[$key]['items_per_page'] = array(
         '#type' => 'select',
         '#title' => t('Items per page'),
         '#description' => t('The amount of news articles to show per page'),
         '#required' => true,
-        '#options' => array_combine(range(1, 10), range(1, 10)),
+        '#options' => $items_per_page,
         '#default_value' => $settings ? $settings['items_per_page'] : 1,
     );
 

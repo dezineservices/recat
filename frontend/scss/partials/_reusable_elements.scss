@@ -96,3 +96,20 @@ a.btn-border {
 .text-center {
   text-align: center;
 }
+
+.icon-lock {
+  width: 20px;
+  height: 24px;
+  background-position: -54px top;
+  margin-top: -1px;
+  position: relative;
+  display: block;
+
+  &.unlocked {
+    background-position: -80px top;
+  }
+
+  &.locked {
+    background-position: -106px top;
+  }
+}

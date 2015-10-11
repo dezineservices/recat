@@ -32,6 +32,13 @@ function recat_preprocess_page(&$variables) {
 function recat_preprocess_block(&$variables) {
     $variables['block_html_id'] = str_replace('BlocksRecatBlocks', '', $variables['block_html_id']);
     $variables['block_html_id'] = str_replace('RecatNews', '', $variables['block_html_id']);
+
+    switch ($variables['block_html_id']) {
+        case 'recatSubmenu':
+            $variables['classes_array'][] = 'panel-sidebar';
+            break;
+
+    }
 }
 
 function recat_form_alter(&$form, &$form_state, $form_id) {
@@ -85,6 +92,10 @@ function _recat_preprocess_page_main_content(&$variables) {
     if (isset($variables['node'])) {
         $variables['has_main_content'] = false;
         foreach (array('body', 'picture') as $field) {
+            if (!isset($variables['node']->$field)) {
+                continue;
+            }
+
             if ($variables['node']->$field) {
                 $variables['has_main_content'] = true;
                 break;

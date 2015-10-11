@@ -44,6 +44,9 @@ function _recat_blocks_submenu_view($key) {
     }
 
     $menu_tree = _recat_blocks_submenu_get_tree($link['mlid'], $settings['menu'], $settings['max_depth'] + 1);
+    if (empty($menu_tree['below'])) {
+        return;
+    }
 
     return array(
         '#theme' => 'recat_blocks_submenu',

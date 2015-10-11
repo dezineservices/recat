@@ -1,0 +1,30 @@
+<?php
+
+function recat_core_install() {
+    static $schema;
+
+    $schema = drupal_get_schema('file_managed', !isset($schema));
+    if (!db_field_exists('file_managed', 'hash')) {
+        db_add_field('file_managed', 'hash', $schema['fields']['hash']);
+    }
+
+    $managed_files = db_query('SELECT fid FROM {file_managed} WHERE hash IS NULL');
+    $rows_updated = 0;
+
+    foreach ($managed_files as $managed_file) {
+        $rows_updated += _recat_core_save_hash_for_fid($managed_file->fid);
+    }
+
+    drupal_set_message(t('Generated !count managed file hashes', array(
+        '!count' => $rows_updated
+    )));
+}
+
+function recat_core_uninstall() {
+    static $schema;
+
+    $schema = drupal_get_schema('file_managed', !isset($schema));
+    if (db_field_exists('file_managed', 'hash')) {
+        db_drop_field('file_managed', 'hash');
+    }
+}

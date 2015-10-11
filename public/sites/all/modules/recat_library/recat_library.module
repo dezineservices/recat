@@ -1,0 +1,159 @@
+<?php
+
+define('RECAT_LIBRARY_VOCABULARY_NAME', 'tags');
+
+function recat_library_menu() {
+    $items = array();
+    $items['admin/config/recat/library'] = array(
+        'title' => t('Library settings'),
+        'description' => t('Change the different file library settings.'),
+        'page callback' => 'drupal_get_form',
+        'page arguments' => array('recat_library_admin'),
+        'access arguments' => array('administer site configuration'),
+        'file' => 'recat_library.admin.inc',
+    );
+
+    $items[_recat_library_get_url()] = array(
+        'title' => 'Recat library service',
+        'page callback' => 'recat_library_ajax',
+        'delivery callback' => 'drupal_json_output',
+        'access arguments' => array('access content'),
+        'type' => MENU_CALLBACK,
+        'file' => 'recat_library.ajax.inc',
+    );
+
+    return $items;
+}
+
+function recat_library_theme() {
+    return array(
+        'recat_library' => array(
+            'template' => 'templates/block',
+            'variables' => array(
+                'tags' => array(),
+            ),
+        ),
+        'recat_library_tags' => array(
+            'template' => 'templates/tags',
+            'variables' => array(
+                'title' => null,
+                'tags' => array(),
+            ),
+        ),
+    );
+}
+
+function recat_library_block_info() {
+    $blocks = array();
+    $blocks['recat_library'] = array(
+        'info' => t('Files library'),
+        'cache' => DRUPAL_CACHE_PER_PAGE,
+        'visibility' => BLOCK_VISIBILITY_NOTLISTED,
+        'pages' => '',
+    );
+
+    return $blocks;
+}
+
+function recat_library_block_configure($delta = '') {
+    switch ($delta) {
+        case 'recat_library':
+            module_load_include('blocks.inc', 'recat_library', 'recat_library');
+            return _recat_library_block_configure($delta);
+
+    }
+}
+
+function recat_library_block_save($delta = '', $edit = array()) {
+    switch ($delta) {
+        case 'recat_library':
+            module_load_include('blocks.inc', 'recat_library', 'recat_library');
+            return _recat_library_block_save($edit, $delta);
+
+    }
+}
+
+function recat_library_block_view($delta = '') {
+    switch ($delta) {
+        case 'recat_library':
+            module_load_include('blocks.inc', 'recat_library', 'recat_library');
+            return array(
+                'title' => '<none>',
+                'content' => _recat_library_block_view($delta),
+            );
+    }
+}
+
+function _recat_library_get_url() {
+    return 'ajax/recat/library';
+}
+
+function _recat_library_get_nodes($tids = array(), $tid_where = 'OR', $limit = 10, $order_by = 'n.title', $order_direction = 'ASC') {
+    global $language;
+
+    $query = db_select('node', 'n')
+        ->extend('RecatCorePager');
+
+    $query
+        ->fields('n', array('nid'))
+        ->condition('n.status', 1)
+        ->condition('n.language', $language->language)
+        ->condition('n.type', 'file')
+        ->orderBy($order_by, $order_direction)
+        ->addTag('node_access')
+        ->limit($limit);
+
+    if (!empty($tids)) {
+        $query->join('field_data_field_tags', 'tags', 'tags.entity_id = n.nid');
+        $query->condition('tags.entity_type', 'node');
+
+        $query->condition('tags.field_tags_tid', $tids, 'IN')
+            ->groupBy('tags.entity_id');
+
+        if ($tid_where === 'AND') {
+            $query->havingCondition('tags_file', count($tids))
+                ->addExpression('COUNT(DISTINCT tags.field_tags_tid)', 'tags_file');
+        }
+    }
+
+    $nids = $query->execute()->fetchAllAssoc('nid');
+
+    return array($query->getCurrentPage(),  $query->getTotalPages(), $query->getTotalItemCount(), $nids);
+}
+
+function _recat_library_get_vocabulary() {
+    $vocabulary = taxonomy_vocabulary_machine_name_load(RECAT_LIBRARY_VOCABULARY_NAME);
+    if (!$vocabulary) {
+        return null;
+    }
+
+    if (module_exists('i18n_taxonomy')) {
+        $vocabulary->name = i18n_taxonomy_vocabulary_name($vocabulary);
+    }
+
+    return $vocabulary;
+}
+
+function _recat_library_get_tags() {
+    $tags = array();
+    $vocabulary = taxonomy_vocabulary_machine_name_load(RECAT_LIBRARY_VOCABULARY_NAME);
+
+    if (!$vocabulary) {
+        return $tags;
+    }
+
+    $tags = taxonomy_get_tree($vocabulary->vid, 0, 1);
+    if (!$tags) {
+        return $tags;
+    }
+
+    if (module_exists('i18n_taxonomy')) {
+        $tags = i18n_taxonomy_localize_terms($tags);
+    }
+
+    return $tags;
+}
+
+function _recat_library_get_settings($key = 'recat_library') {
+    return variable_get($key, false);
+}

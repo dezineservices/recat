@@ -1,0 +1,50 @@
+table {
+  font-size: 15px;
+  width: 100%;
+  border-spacing: 0;
+  border-collapse: separate;
+  border: 1px solid $neutralColor;
+  @include border-radius($borderRadius);
+
+  th {
+    font-weight: 400;
+    padding: 11px 18px 10px;
+    border: 1px solid $neutralColor;
+    border-width: 0 0 1px 1px;
+    background: $neutralLightColor;
+
+    &:first-child {
+      border-left: 0;
+      @include border-radius($borderRadius 0 0 0);
+    }
+
+    &:last-child {
+      @include border-radius(0 $borderRadius 0 0);
+    }
+  }
+
+  td {
+    font-weight: 100;
+    padding: 11px 18px 10px;
+    border: 1px solid $neutralColor;
+    border-width: 0 0 1px 1px;
+
+    &:first-child {
+      border-left: 0;
+    }
+  }
+
+  tr {
+    &:last-child {
+      td {
+        border-bottom: 0;
+      }
+    }
+  }
+
+  .icon-column {
+    padding-left: 15px;
+    padding-right: 15px;
+    width: 20px;
+  }
+}

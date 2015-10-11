@@ -35,6 +35,8 @@
 </section>
 <?php endif; ?>
 
+<?php print $messages; ?>
+
 <?php if (!empty($tabs)): ?>
 <div class="authoring-tabs">
     <div class="row">
@@ -49,10 +51,10 @@
 <section id="main" role="main">
     <?php if ($has_main_content): ?>
     <div class="row">
-        <div id="sidebar" class="columns small-12 medium-3">
+        <div id="sidebar" class="columns-sidebar columns small-12 medium-3">
             <?php print render($page['sidebar']); ?>
         </div>
-        <div id="content" class="columns small-12 medium-9 large-push-1 large-7 end">
+        <div id="content" class="columns-content columns small-12 medium-9 large-push-1 large-7 end">
             <?php print render($page['content']); ?>
         </div>
     </div>

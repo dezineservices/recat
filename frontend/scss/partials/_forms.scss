@@ -36,6 +36,28 @@ input {
       background: $linkColorHover;
     }
   }
+
+  &[type="radio"] {
+    -webkit-appearance: radio;
+  }
+
+  &[type="checkbox"] {
+    position: absolute;
+    width: 13px;
+    height: 13px;
+    margin: 5px 0 0 -28px;
+    padding: 0;
+    -webkit-appearance: checkbox;
+  }
+}
+
+.label-winput {
+  font-weight: 100;
+  font-size: 15px;
+  line-height: 1.5;
+  display: block;
+  padding: 2px 0 1px 35px;
+  margin: 10px 0;
 }
 
 textarea {

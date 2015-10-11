@@ -1,0 +1,8 @@
+name = Recat Library
+description = Provides files download library
+package = Recat
+core = 7.x
+version = 7.x-0.1
+
+dependencies[] = hs_resource
+dependencies[] = recat_core
