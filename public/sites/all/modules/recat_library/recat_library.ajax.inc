@@ -27,11 +27,23 @@ function recat_library_ajax() {
 
         foreach ($nodes as $nid => $node) {
             $node_wrapper = entity_metadata_wrapper('node', $node);
+
             $field_file = $node_wrapper->field_file->value();
+            $field_tags = $node_wrapper->field_tags->value();
+
+            if (module_exists('i18n_taxonomy')) {
+                $field_tags = i18n_taxonomy_localize_terms($field_tags);
+            }
+
+            $tags = array();
+            foreach ($field_tags as $tag) {
+                $tags[] = $tag->name;
+            }
 
             $output['nodes'][] = array(
                 'nid' => $nid,
                 'title' => $node->title,
+                'tags' => !empty($tags) ? join(', ', $tags) : null,
                 'date' => format_date($node->created, $settings['date_format']),
                 'url' => $field_file['hash'],
                 'private' => $node_wrapper->field_private->value(),

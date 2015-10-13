@@ -39,7 +39,10 @@ function _recat_library_block_view($key) {
                         'serviceUrl' => url(_recat_library_get_url(), array('absolute' => true)),
                     )),
                     'type' => 'setting',
-                ),
+                ), array(
+                    'data' => drupal_get_path('module', 'recat_library') . '/js/recat_library.min.js',
+                    'type' => 'file',
+                )
             ),
             'library' => array(
                 array('recat_core', 'recat_core_angularjs'),
