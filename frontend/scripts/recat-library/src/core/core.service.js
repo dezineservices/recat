@@ -12,14 +12,18 @@
             getFiles: getFiles
         };
 
-        function getFiles (page) {
-            return loadData(page);
+        function getFiles (page, tags) {
+            return loadData(page, tags);
         }
 
-        function loadData (page) {
+        function loadData (page, tags) {
             var params = {};
             if (page) {
                 params.page = parseInt(page, 10);
+            }
+
+            if (tags.length) {
+                params.tid = tags.join(',');
             }
 
             var request = $http({

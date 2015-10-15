@@ -3,3 +3,9 @@
   background-repeat: no-repeat;
   background-size: 296px 112px;
 }
+
+%loader {
+  background-image: inline-image('../images/loader.gif');
+  background-repeat: no-repeat;
+  background-position: center center;
+}

@@ -34,6 +34,9 @@ function recat_preprocess_block(&$variables) {
     $variables['block_html_id'] = str_replace('RecatNews', '', $variables['block_html_id']);
 
     switch ($variables['block_html_id']) {
+        case 'recatNews':
+            $variables['classes_array'][] = 'block-neutral';
+            break;
         case 'recatSubmenu':
             $variables['classes_array'][] = 'panel-sidebar';
             break;

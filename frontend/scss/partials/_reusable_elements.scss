@@ -97,11 +97,25 @@ a.btn-border {
   text-align: center;
 }
 
+.relative {
+  position: relative;
+}
+
+.loader {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  background-color: rgba(255, 255, 255, .8);
+  @extend %loader;
+}
+
 .icon-lock {
   width: 20px;
   height: 24px;
   background-position: -54px top;
-  margin-top: -1px;
+  margin-top: -2px;
   position: relative;
   display: block;
 

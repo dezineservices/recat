@@ -8,9 +8,13 @@
     ListingController.$inject = ['$scope', 'core.service.library'];
 
     function ListingController ($scope, service) {
-        var MAX_PAGER_BUTTONS = 2;
+        var MAX_PAGER_BUTTONS = 9;
 
-        var vm = this;
+        var vm = this,
+            currentTags = [];
+
+        vm.loaded = false;
+        vm.loading = true;
 
         vm.currentPage = 0;
         vm.totalPages = 0;
@@ -20,6 +24,8 @@
         vm.pagePrevious = pagePrevious;
         vm.pageNext = pageNext;
         vm.pageChange = pageChange;
+        vm.filterChange = filterChange;
+        vm.downloadFile = downloadFile;
 
         loadData();
 
@@ -34,19 +40,41 @@
         }
 
         function pageChange (page) {
-            vm.currentPage = parseInt(page, 10);
+            vm.currentPage = parseInt(page, 10) - 1;
             loadData();
         }
 
+        function filterChange ($event, id) {
+            var isChecked = !!$event.target.checked;
+
+            if (isChecked) {
+                currentTags.push(id);
+            } else {
+                currentTags = removeTag(id);
+            }
+
+            loadData();
+        }
+
+        function downloadFile (url) {
+            if (!url) {
+                return;
+            }
+
+            document.location = url;
+        }
+
         function loadData () {
-            service.getFiles(vm.currentPage).then(handleSuccess, handleError);
+            vm.loading = true;
+            service.getFiles(vm.currentPage, currentTags).then(handleSuccess, handleError);
         }
 
         function generatePager () {
             var pages = [],
                 middle = Math.ceil(MAX_PAGER_BUTTONS / 2),
-                first = vm.currentPage - middle + 1,
-                last = vm.currentPage + MAX_PAGER_BUTTONS - middle,
+                current = vm.currentPage + 1,
+                first = current - middle + 1,
+                last = current + MAX_PAGER_BUTTONS - middle,
                 max = vm.totalPages;
 
             var i = first;
@@ -60,6 +88,10 @@
                 i = 1;
             }
 
+            if (i > 1) {
+                pages.push('ellipsis');
+            }
+
             for (; i <= last && i <= max; i += 1) {
                 pages.push(i);
             }
@@ -71,7 +103,26 @@
             return pages;
         }
 
+        function removeTag (idToRemove) {
+            var tags = [],
+                i = 0,
+                len = currentTags.length;
+
+            for (; i < len; i += 1) {
+                if (idToRemove === currentTags[i]) {
+                    continue;
+                }
+
+                tags.push(currentTags[i]);
+            }
+
+            return tags;
+        }
+
         function handleSuccess (data) {
+            vm.loaded = true;
+            vm.loading = false;
+
             vm.nodes = data.nodes;
             vm.currentPage = data.pager.current;
             vm.totalPages = data.pager.pages;
@@ -80,6 +131,9 @@
         }
 
         function handleError (errorMessage) {
+            vm.loaded = true;
+            vm.loading = false;
+
             //@todo - provide error;
             console.log(errorMessage);
         }

@@ -13,7 +13,8 @@
   }
 
   a,
-  .pager-current {
+  .pager-current,
+  .pager-ellipsis {
     width: 50px;
     padding: 12px 0 10px;
     display: inline-block;
@@ -23,12 +24,17 @@
 
   a {
     color: $fontColorBase;
-    background: #fff;
+    background: $neutralLightColor;
 
     &:hover {
       background: $brandColor;
       color: #fff;
     }
+  }
+
+  .pager-ellipsis {
+    color: $fontColorBase;
+    background: $neutralLightColor;
   }
 
   .pager-current {
@@ -95,6 +101,22 @@
           @include transform(translateX(300%));
         }
       }
+    }
+  }
+}
+
+.block-neutral {
+  .pager {
+    a {
+      background: #fff;
+
+      &:hover {
+        background: $brandColor;
+      }
+    }
+
+    .pager-ellipsis {
+      background: #fff;
     }
   }
 }

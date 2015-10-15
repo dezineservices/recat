@@ -9,8 +9,10 @@ function recat_library_ajax() {
     $settings = _recat_library_get_settings();
     
     try {
+        $tids = filter_input(INPUT_GET, 'tid', FILTER_SANITIZE_URL);
+
         list($current_page, $total_pages, $total, $nids)
-            = _recat_library_get_nodes(array(), $settings['tags_query'], $settings['items_per_page']);
+            = _recat_library_get_nodes($tids ? explode(',', $tids) : array(), $settings['tags_query'], $settings['items_per_page']);
 
         if (empty($nids)) {
             throw new Exception('recat_library.no_results_message', 404);
@@ -45,8 +47,10 @@ function recat_library_ajax() {
                 'title' => $node->title,
                 'tags' => !empty($tags) ? join(', ', $tags) : null,
                 'date' => format_date($node->created, $settings['date_format']),
-                'url' => $field_file['hash'],
                 'private' => $node_wrapper->field_private->value(),
+                'url' => url(_recat_library_get_url('download', $field_file['hash']), array(
+                    'absolute' => true,
+                )),
             );
         }
 

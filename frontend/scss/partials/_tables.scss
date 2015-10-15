@@ -1,5 +1,6 @@
 table {
   font-size: 15px;
+  line-height: 1.5;
   width: 100%;
   border-spacing: 0;
   border-collapse: separate;
@@ -8,10 +9,11 @@ table {
 
   th {
     font-weight: 400;
-    padding: 11px 18px 10px;
+    padding: 14px 18px 12px;
     border: 1px solid $neutralColor;
     border-width: 0 0 1px 1px;
     background: $neutralLightColor;
+    white-space: nowrap;
 
     &:first-child {
       border-left: 0;
@@ -25,7 +27,7 @@ table {
 
   td {
     font-weight: 100;
-    padding: 11px 18px 10px;
+    padding: 14px 18px 12px;
     border: 1px solid $neutralColor;
     border-width: 0 0 1px 1px;
 
@@ -46,5 +48,21 @@ table {
     padding-left: 15px;
     padding-right: 15px;
     width: 20px;
+  }
+  
+  &.tbl-hover {
+    tr {
+      cursor: pointer;
+
+      &:hover {
+        td {
+          background-color: #f6f8fa;
+        }
+      }
+    }
+
+    td {
+      @include transition(background .2s ease);
+    }
   }
 }

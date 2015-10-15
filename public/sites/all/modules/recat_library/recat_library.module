@@ -22,6 +22,15 @@ function recat_library_menu() {
         'file' => 'recat_library.ajax.inc',
     );
 
+    $items[_recat_library_get_url('download')] = array(
+        'title' => 'Recat library file download',
+        'page callback' => 'recat_library_download',
+        'page arguments' => array(3),
+        'access arguments' => array('access content'),
+        'type' => MENU_CALLBACK,
+        'file' => 'recat_library.download.inc',
+    );
+
     return $items;
 }
 
@@ -84,8 +93,34 @@ function recat_library_block_view($delta = '') {
     }
 }
 
-function _recat_library_get_url() {
-    return 'ajax/recat/library';
+function _recat_library_get_url($type = 'ajax', $parameter = false) {
+    $url = '';
+    switch ($type) {
+        case 'ajax':
+            $url = 'ajax/recat/library';
+            break;
+        case 'download':
+            $url = 'recat/library/download/%';
+            break;
+    }
+
+    if ($parameter) {
+        $url = str_replace('%', $parameter, $url);
+    }
+
+    return $url;
+}
+
+function _recat_library_get_file($hash) {
+    $query = db_select('file_managed', 'f');
+
+    $query
+        ->fields('f', array('fid'))
+        ->condition('status', 1)
+        ->condition('hash', $hash)
+        ->range(0, 1);
+
+    return $query->execute()->fetch();
 }
 
 function _recat_library_get_nodes($tids = array(), $tid_where = 'OR', $limit = 10, $order_by = 'n.title', $order_direction = 'ASC') {

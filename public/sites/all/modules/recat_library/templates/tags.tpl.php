@@ -3,7 +3,7 @@
     <div class="content">
         <?php foreach ($tags as $tag): ?>
         <label class="label-winput">
-            <input type="checkbox" name="filter" value="<?php print $tag->tid; ?>" />
+            <input type="checkbox" name="filter" value="<?php print $tag->tid; ?>" data-ng-click="listing.filterChange($event, <?php print $tag->tid; ?>)" />
             <?php print $tag->name; ?>
         </label>
         <?php endforeach; ?>
