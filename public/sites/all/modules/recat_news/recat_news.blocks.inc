@@ -106,3 +106,39 @@ function _recat_news_block_latest_view($key) {
         'teasers' => $teasers,
     ));
 }
+
+function _recat_news_block_tags_configure($key) {
+
+}
+
+function _recat_news_block_tags_save($form_state, $key) {
+    // nothing to save
+}
+
+function _recat_news_block_tags_view($key) {
+    return theme('recat_news_tags', array(
+        'tags' => _recat_news_get_tags(),
+    ));
+}
+
+function _recat_news_block_categories_configure($key) {
+
+}
+
+function _recat_news_block_categories_save($form_state, $key) {
+    // nothing to save
+}
+
+function _recat_news_block_categories_view($key) {
+    $categories = array();
+    foreach (_recat_news_get_categories() as $category) {
+        $categories[] = array(
+            'term' => $category,
+            'count' => _recat_news_get_count_by_term($category),
+        );
+    }
+
+    return theme('recat_news_categories', array(
+        'categories' => $categories,
+    ));
+}

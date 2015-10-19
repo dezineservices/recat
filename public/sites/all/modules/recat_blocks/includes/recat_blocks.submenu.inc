@@ -48,10 +48,15 @@ function _recat_blocks_submenu_view($key) {
         return;
     }
 
+    $links = menu_tree_output($menu_tree['below']);
+    if (empty($links)) {
+        return;
+    }
+
     return array(
         '#theme' => 'recat_blocks_submenu',
         '#title' => $menu_tree['link']['title'],
-        '#links' => menu_tree_output($menu_tree['below']),
+        '#links' => $links,
     );
 }
 

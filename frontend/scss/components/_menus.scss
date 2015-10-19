@@ -13,7 +13,7 @@
       position: absolute;
       text-transform: none;
       padding: 10px 0 0;
-      margin: 0 0 0 30px;
+      margin: 0 0 0 20px;
       z-index: 99;
       top: 100%;
       display: none;
@@ -99,6 +99,7 @@
     color: $fontColorBase;
 
     &.active,
+    &.active-trail,
     &:hover {
       color: $linkColor;
     }

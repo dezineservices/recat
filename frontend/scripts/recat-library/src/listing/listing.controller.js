@@ -20,6 +20,7 @@
         vm.totalPages = 0;
         vm.pages = [];
         vm.nodes = [];
+        vm.errorMessage = '';
 
         vm.pagePrevious = pagePrevious;
         vm.pageNext = pageNext;
@@ -130,12 +131,14 @@
             vm.pages = generatePager();
         }
 
-        function handleError (errorMessage) {
+        function handleError (errorData) {
             vm.loaded = true;
             vm.loading = false;
 
-            //@todo - provide error;
-            console.log(errorMessage);
+            vm.nodes = vm.pages = [];
+            vm.currentPage = vm.totalPages = 0;
+
+            vm.errorMessage = errorData.text;
         }
     }
 })();

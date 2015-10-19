@@ -106,19 +106,19 @@ function _hs_menu_tree_active_trail(&$tree_data, $menu_item) {
     if (!empty($item['link']) && ($item['link']['href'] === $menu_item['href']
             || ($item['link']['href'] === '<front>' && $is_front_page))) {
       $item['link']['in_active_trail'] = true;
-      //return true;
+      return true;
     }
     else {
       if (!empty($item['below'])) {
         if (_hs_menu_tree_active_trail($item['below'], $menu_item)) {
           $item['link']['in_active_trail'] = true;
-          //return true;
+          return true;
         }
       }
     }
   }
 
-  //return false;
+  return false;
 }
 
 function _hs_block_id_cleanup($id) {

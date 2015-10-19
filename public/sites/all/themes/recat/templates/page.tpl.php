@@ -48,7 +48,7 @@
 <?php endif; ?>
 
 
-<section id="main" role="main">
+<section id="main" role="main"<?php print isset($is_colored) ? ' class="colored"' : ''; ?>>
     <?php if ($has_main_content): ?>
     <div class="row">
         <div id="sidebar" class="columns-sidebar columns small-12 medium-3">

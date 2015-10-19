@@ -24,6 +24,14 @@ $borderRadius: 5px;
     font-size: 25px;
     color: $fontColorTitle;
     margin: 0 0 10px;
+
+    a {
+      color: inherit;
+
+      &:hover {
+        color: $linkColorHover;
+      }
+    }
   }
 
   .narrow {
@@ -53,6 +61,9 @@ $borderRadius: 5px;
 }
 
 .panel-sidebar {
+  margin: 0 0 35px;
+  background: transparent;
+
   .title {
     background: $neutralColor;
     font-size: 20px;
@@ -61,13 +72,32 @@ $borderRadius: 5px;
     @include border-radius($borderRadius $borderRadius 0 0);
   }
 
+  .tag {
+    text-transform: uppercase;
+    font-weight: 500;
+    font-size: 70%;
+    padding: 10px 14px 8px;
+    margin: 0 10px 10px 0;
+    color: #fff;
+    background: $linkColor;
+    display: block;
+    float: left;
+    @include border-radius($borderRadius);
+
+    &:hover {
+      background: $linkColorHover;
+    }
+  }
+
   .content {
     background: $neutralLightColor;
     font-weight: 400;
     line-height: 1.5;
     padding: 12px 0;
     @include border-radius(0 0 $borderRadius $borderRadius);
+  }
 
+  .menu {
     a {
       color: $fontColorBase;
       padding: 13px 50px 13px 30px;
@@ -93,22 +123,38 @@ $borderRadius: 5px;
         }
       }
     }
-
-    ul ul {
-      display: none;
-    }
   }
 
   ul {
     margin: 0;
+
+    ul {
+      display: none;
+    }
   }
 
-  li {
+  ul li {
     padding: 0;
     margin: 0;
 
     &:before {
       @include before-reset;
+    }
+  }
+}
+
+#main.colored {
+  .panel-sidebar {
+    .content {
+      background: #fff;
+    }
+
+    .menu {
+      a {
+        &:hover {
+          background: $neutralLightColor;
+        }
+      }
     }
   }
 }
@@ -128,5 +174,13 @@ $borderRadius: 5px;
     border: 1px solid $neutralColor;
     border-width: 1px 0;
     @include border-radius(0);
+  }
+}
+
+.panel-node {
+  margin: 13px 0 35px;
+
+  p {
+    font-size: 100%;
   }
 }

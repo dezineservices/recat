@@ -51,18 +51,20 @@ table {
   }
   
   &.tbl-hover {
-    tr {
-      cursor: pointer;
+    tbody {
+      tr {
+        cursor: pointer;
 
-      &:hover {
-        td {
-          background-color: #f6f8fa;
+        &:hover {
+          td {
+            background-color: #f6f8fa;
+          }
         }
       }
-    }
 
-    td {
-      @include transition(background .2s ease);
+      td {
+        @include transition(background .2s ease);
+      }
     }
   }
 }

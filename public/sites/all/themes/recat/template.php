@@ -27,6 +27,16 @@ function recat_preprocess_page(&$variables) {
     _recat_preprocess_page_tabs($variables);
     _recat_preprocess_page_main_content($variables);
     _recat_preprocess_page_block_reference($variables);
+    _recat_preprocess_page_news($variables);
+}
+
+function recat_preprocess_node(&$variables) {
+    if ($variables['type'] === 'news') {
+        $variables['classes_array'][] = 'panel panel-node';
+        $variables['title_prefix'][] = array(
+            '#markup' => sprintf('<h1 class="h3 node-title">%s</h1>', $variables['title']),
+        );
+    }
 }
 
 function recat_preprocess_block(&$variables) {
@@ -37,6 +47,10 @@ function recat_preprocess_block(&$variables) {
         case 'recatNews':
             $variables['classes_array'][] = 'block-neutral';
             break;
+        case 'recatNewsTags':
+        case 'recatNewsCategories':
+            $variables['theme_hook_suggestions'][] = 'block__sidebar_panel';
+            $variables['title_attributes_array']['class'] = array('title');
         case 'recatSubmenu':
             $variables['classes_array'][] = 'panel-sidebar';
             break;
@@ -132,6 +146,30 @@ function _recat_preprocess_page_block_reference(&$variables) {
     unset($node_view['field_block']);
 
     $variables['page']['content']['system_main']['nodes'][$variables['node']->nid] = $node_view;
+}
+
+function _recat_preprocess_page_news(&$variables) {
+    if (!isset($variables['node']) || $variables['node']->type !== 'news') {
+        return;
+    }
+
+    $blocks = array();
+    foreach (array('recat_news_tags', 'recat_news_categories') as $block_name) {
+        $block = block_load('recat_news', $block_name);
+        if (!$block) {
+            continue;
+        }
+
+        $blocks[] = $block;
+    }
+
+    if (!empty($blocks)) {
+        $variables['page']['sidebar'] = array_merge(_block_get_renderable_array(
+            _block_render_blocks($blocks)
+        ), $variables['page']['sidebar']);
+    }
+
+    $variables['is_colored'] = true;
 }
 
 function _recat_search_form_alter(&$form) {

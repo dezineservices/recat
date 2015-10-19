@@ -1,5 +1,8 @@
 <?php
 
+define('RECAT_NEWS_TAGS_VOCABULARY_NAME', 'news_tags');
+define('RECAT_NEWS_CATEGORIES_VOCABULARY_NAME', 'news_categories');
+
 function recat_news_menu() {
     $items = array();
     $items['admin/config/recat/news'] = array(
@@ -28,6 +31,18 @@ function recat_news_theme() {
                 'teasers' => array(),
             ),
         ),
+        'recat_news_tags' => array(
+            'template' => 'templates/tags',
+            'variables' => array(
+                'tags' => array(),
+            ),
+        ),
+        'recat_news_categories' => array(
+            'template' => 'templates/categories',
+            'variables' => array(
+                'categories' => array(),
+            ),
+        ),
         'recat_news_teaser' => array(
             'template' => 'templates/teaser',
             'variables' => array(
@@ -48,11 +63,22 @@ function recat_news_block_info() {
         'info' => t('News listing'),
         'cache' => DRUPAL_NO_CACHE,
     );
+
     $blocks['recat_news_latest'] = array(
         'info' => t('Latest news'),
         'cache' => DRUPAL_CACHE_PER_ROLE,
         'visibility' => BLOCK_VISIBILITY_LISTED,
         'pages' => '<front>',
+    );
+
+    $blocks['recat_news_tags'] = array(
+        'info' => t('News tags'),
+        'cache' => DRUPAL_CACHE_PER_ROLE
+    );
+
+    $blocks['recat_news_categories'] = array(
+        'info' => t('News categories'),
+        'cache' => DRUPAL_CACHE_PER_ROLE
     );
 
     return $blocks;
@@ -66,6 +92,12 @@ function recat_news_block_configure($delta = '') {
         case 'recat_news_latest':
             module_load_include('blocks.inc', 'recat_news', 'recat_news');
             return _recat_news_block_latest_configure($delta);
+        case 'recat_news_tags':
+            module_load_include('blocks.inc', 'recat_news', 'recat_news');
+            return _recat_news_block_tags_configure($delta);
+        case 'recat_news_categories':
+            module_load_include('blocks.inc', 'recat_news', 'recat_news');
+            return _recat_news_block_categories_configure($delta);
 
     }
 }
@@ -78,6 +110,12 @@ function recat_news_block_save($delta = '', $edit = array()) {
         case 'recat_news_latest':
             module_load_include('blocks.inc', 'recat_news', 'recat_news');
             return _recat_news_block_latest_save($edit, $delta);
+        case 'recat_news_tags':
+            module_load_include('blocks.inc', 'recat_news', 'recat_news');
+            return _recat_news_block_tags_save($edit, $delta);
+        case 'recat_news_categories':
+            module_load_include('blocks.inc', 'recat_news', 'recat_news');
+            return _recat_news_block_categories_save($edit, $delta);
 
     }
 }
@@ -94,6 +132,16 @@ function recat_news_block_view($delta = '') {
             module_load_include('blocks.inc', 'recat_news', 'recat_news');
             return array(
                 'content' => _recat_news_block_latest_view($delta),
+            );
+        case 'recat_news_tags':
+            module_load_include('blocks.inc', 'recat_news', 'recat_news');
+            return array(
+                'content' => _recat_news_block_tags_view($delta),
+            );
+        case 'recat_news_categories':
+            module_load_include('blocks.inc', 'recat_news', 'recat_news');
+            return array(
+                'content' => _recat_news_block_categories_view($delta),
             );
     }
 }
@@ -143,6 +191,55 @@ function _recat_news_get_nodes($limit = null, $usePager = false, $order_by = 'cr
     }
 
     return $query->execute()->fetchAllAssoc('nid');
+}
+
+function _recat_news_get_tags() {
+    return _recat_news_get_terms(RECAT_NEWS_TAGS_VOCABULARY_NAME);
+}
+
+function _recat_news_get_categories() {
+    return _recat_news_get_terms(RECAT_NEWS_CATEGORIES_VOCABULARY_NAME);
+}
+
+function _recat_news_get_terms($vocabulary_name) {
+    $tags = array();
+    $vocabulary = taxonomy_vocabulary_machine_name_load($vocabulary_name);
+
+    if (!$vocabulary) {
+        return $tags;
+    }
+
+    $tags = taxonomy_get_tree($vocabulary->vid, 0, 1);
+    if (!$tags) {
+        return $tags;
+    }
+
+    if (module_exists('i18n_taxonomy')) {
+        $tags = i18n_taxonomy_localize_terms($tags);
+    }
+
+    return $tags;
+}
+
+function _recat_news_get_count_by_term($term) {
+    global $language;
+
+    $query = db_select('node', 'n');
+
+    $query
+        ->fields('n', array('nid'))
+        ->condition('n.status', 1)
+        ->condition('n.language', $language->language)
+        ->condition('n.type', 'news')
+        ->addTag('node_access');
+
+    $query->join('field_data_field_news_category', 'category', 'category.entity_id = n.nid');
+
+    $query
+        ->condition('category.entity_type', 'node')
+        ->condition('category.field_news_category_tid', $term->tid);
+
+    return $query->execute()->rowCount();
 }
 
 function _recat_news_get_teaser_view($node, $image_style = 'thumbnail', $date_format = 'medium', $max_chars = 150) {

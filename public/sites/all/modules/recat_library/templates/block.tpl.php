@@ -4,7 +4,7 @@
     </div>
     <div class="columns-content columns small-12 medium-9 large-push-1 large-8 end">
         <div class="library relative ag-app" data-ng-class="{ loaded: listing.loaded }">
-            <table class="tbl-library tbl-hover" cellspacing="0" cellpadding="0">
+            <table class="tbl-library" cellspacing="0" cellpadding="0" data-ng-class="{ 'tbl-hover': listing.nodes.length }">
                 <thead>
                     <tr>
                         <th class="icon-column"><i class="sprite icon-lock"></i></th>
@@ -13,12 +13,17 @@
                         <th>Date</th>
                     </tr>
                 </thead>
-                <tbody>
+                <tbody data-ng-if="listing.nodes.length">
                     <tr data-ng-repeat="node in listing.nodes track by node.nid" data-ng-click="listing.downloadFile(node.url)">
                         <td class="icon-column"><i class="sprite icon-lock" data-ng-class="{ unlocked: !node.private, locked: node.private }"></i></td>
                         <td><a data-ng-href="{{ node.url }}">{{ node.title }}</a></td>
                         <td>{{ node.tags }}</td>
                         <td>{{ node.date }}</td>
+                    </tr>
+                </tbody>
+                <tbody data-ng-if="!listing.nodes.length">
+                    <tr>
+                        <td colspan="4" class="error">{{ listing.errorMessage }}</td>
                     </tr>
                 </tbody>
             </table>

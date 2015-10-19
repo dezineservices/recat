@@ -41,6 +41,10 @@
                 return $q.reject(response.statusText);
             }
 
+            if (!response.data.success) {
+                return $q.reject(response.data.message);
+            }
+
             return response.data;
         }
 

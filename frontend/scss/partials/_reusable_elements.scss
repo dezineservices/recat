@@ -101,6 +101,11 @@ a.btn-border {
   position: relative;
 }
 
+div.error,
+.error {
+  color: #d2335c;
+}
+
 .loader {
   position: absolute;
   left: 0;

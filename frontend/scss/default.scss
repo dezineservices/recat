@@ -30,6 +30,10 @@ body {
 
 #main {
   background: #fff;
+
+  &.colored {
+    background: $neutralLightColor;
+  }
 }
 
 .block .columns-content,
@@ -42,6 +46,7 @@ body {
 #systemMain {
   padding-top: 57px;
   padding-bottom: 35px;
+  background: transparent;
 }
 
 // Partials
