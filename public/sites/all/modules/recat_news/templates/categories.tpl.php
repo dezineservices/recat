@@ -1,9 +1,8 @@
 <ul class="menu">
     <?php foreach ($categories as $category): ?>
     <li>
-        <a href="<?php print url(sprintf('taxonomy/term/%d', $category['term']->tid)); ?>">
-            <?php print $category['term']->name; ?> (<?php print $category['count']; ?>)
-        </a>
+        <?php $text = sprintf('%s (%d)', $category['term']->name, $category['count']); ?>
+        <?php print l($text, sprintf('taxonomy/term/%d', $category['term']->tid)); ?>
     </li>
     <?php endforeach; ?>
 </ul>

@@ -24,6 +24,7 @@ function recat_preprocess_page(&$variables) {
         );
     }
 
+    _recat_preprocess_page_title($variables);
     _recat_preprocess_page_tabs($variables);
     _recat_preprocess_page_main_content($variables);
     _recat_preprocess_page_block_reference($variables);
@@ -89,6 +90,17 @@ function _recat_preprocess_html_fonts() {
     ));
 }
 
+function _recat_preprocess_page_title(&$variables) {
+    $active_trail = menu_get_active_trail();
+
+    array_shift($active_trail);
+    if (count($active_trail) < 2) {
+        return;
+    }
+    
+    $variables['heading_title'] = $active_trail[0]['title'];
+}
+
 function _recat_preprocess_page_tabs(&$variables) {
     if (!isset($variables['tabs']) || !isset($variables['tabs']['#primary'])) {
         return;
@@ -149,7 +161,8 @@ function _recat_preprocess_page_block_reference(&$variables) {
 }
 
 function _recat_preprocess_page_news(&$variables) {
-    if (!isset($variables['node']) || $variables['node']->type !== 'news') {
+    if ((!isset($variables['node']) || $variables['node']->type !== 'news')
+        && (!isset($variables['term']) || !isset($variables['term']->is_news))) {
         return;
     }
 

@@ -1,7 +1,7 @@
 $borderRadius: 5px;
 
 .panel {
-  background: #fff;
+  background: $neutralLightColor;
   padding: 35px 30px 18px;
   margin: 0 0 70px;
   @include border-radius($borderRadius);
@@ -48,6 +48,14 @@ $borderRadius: 5px;
   }
 }
 
+.colored,
+section.block,
+.block-neutral {
+  .panel {
+    background: #fff;
+  }
+}
+
 .panel-image {
   padding: 0;
 
@@ -84,6 +92,7 @@ $borderRadius: 5px;
     float: left;
     @include border-radius($borderRadius);
 
+    &.active,
     &:hover {
       background: $linkColorHover;
     }
@@ -115,6 +124,7 @@ $borderRadius: 5px;
         @include transition(transform .2s ease-in-out);
       }
 
+      &.active,
       &:hover {
         background: #fff;
 
@@ -151,6 +161,7 @@ $borderRadius: 5px;
 
     .menu {
       a {
+        &.active,
         &:hover {
           background: $neutralLightColor;
         }

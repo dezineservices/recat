@@ -27,9 +27,13 @@
 <section id="pageTitle">
     <div class="row">
         <div class="columns small-12">
-            <?php print render($title_prefix); ?>
-            <h1><?php print $title; ?></h1>
-            <?php print render($title_suffix); ?>
+            <?php if (isset($heading_title)): ?>
+                <div class="h1 title"><?php print $heading_title; ?></div>
+            <?php else: ?>
+                <?php print render($title_prefix); ?>
+                <h1 class="title"><?php print $title; ?></h1>
+                <?php print render($title_suffix); ?>
+            <?php endif; ?>
         </div>
     </div>
 </section>

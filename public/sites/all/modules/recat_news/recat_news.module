@@ -3,6 +3,14 @@
 define('RECAT_NEWS_TAGS_VOCABULARY_NAME', 'news_tags');
 define('RECAT_NEWS_CATEGORIES_VOCABULARY_NAME', 'news_categories');
 
+function recat_news_module_implements_alter(&$implementations, $hook) {
+    if ($hook == 'menu_alter') {
+        $group = $implementations['recat_news'];
+        unset($implementations['recat_news']);
+        $implementations['recat_news'] = $group;
+    }
+}
+
 function recat_news_menu() {
     $items = array();
     $items['admin/config/recat/news'] = array(
@@ -17,12 +25,21 @@ function recat_news_menu() {
     return $items;
 }
 
+function recat_news_menu_alter(&$items) {
+    $items['taxonomy/term/%taxonomy_term']['page callback'] = 'recat_news_taxonomy_page';
+    $items['taxonomy/term/%taxonomy_term']['module'] = 'recat_news';
+    $items['taxonomy/term/%taxonomy_term']['file'] = 'recat_news.pages.inc';
+    $items['taxonomy/term/%taxonomy_term']['file path'] = drupal_get_path('module', 'recat_news');
+}
+
 function recat_news_theme() {
     return array(
         'recat_news_listing' => array(
             'template' => 'templates/listing',
             'variables' => array(
+                'title' => null,
                 'teasers' => array(),
+                'item_per_line' => 3,
             ),
         ),
         'recat_news_latest_news' => array(
@@ -168,6 +185,20 @@ function recat_news_image_default_styles() {
     return $styles;
 }
 
+function recat_news_preprocess_page(&$variables) {
+    $term = menu_get_object('taxonomy_term', 2);
+    if (!$term) {
+        return;
+    }
+
+    if (!_recat_news_is_taxonomy_page($term)) {
+        return;
+    }
+
+    $term->is_news = true;
+    $variables['term'] = $term;
+}
+
 function _recat_news_get_nodes($limit = null, $usePager = false, $order_by = 'created', $order_direction = 'DESC') {
     global $language;
 
@@ -270,6 +301,19 @@ function _recat_news_get_teaser_view($node, $image_style = 'thumbnail', $date_fo
     );
 }
 
+function _recat_news_get_pager_build() {
+    return array(
+        '#theme' => 'pager',
+        '#tags' => array(t('first'), t('prev'), null, t('next'), t('last')),
+        '#quantity' => 10,
+    );
+}
+
 function _recat_news_get_settings($key = 'recat_news') {
     return variable_get($key, false);
+}
+
+function _recat_news_is_taxonomy_page($term) {
+    return $term->vocabulary_machine_name === RECAT_NEWS_TAGS_VOCABULARY_NAME
+        || $term->vocabulary_machine_name === RECAT_NEWS_CATEGORIES_VOCABULARY_NAME;
 }

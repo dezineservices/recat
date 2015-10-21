@@ -60,5 +60,19 @@ function recat_news_admin($form, &$form_state) {
         '#markup' => _hs_resource_get('recat_news.teaser.read_more'),
     );
 
+    $form[$key]['taxonomy_title'] = array(
+        '#type' => 'markup',
+        '#prefix' => '<div class="form-item"><label>' . t('Results title') . '</label>',
+        '#suffix' => '</div>',
+        '#markup' => _hs_resource_get('recat_news.listing.results_title'),
+    );
+
+    $form[$key]['no_results'] = array(
+        '#type' => 'markup',
+        '#prefix' => '<div class="form-item"><label>' . t('No results message') . '</label>',
+        '#suffix' => '</div>',
+        '#markup' => _hs_resource_get('recat_news.listing.no_results'),
+    );
+
     return system_settings_form($form);
 }
