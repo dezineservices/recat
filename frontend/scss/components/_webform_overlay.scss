@@ -1,0 +1,72 @@
+.mfp-bg {
+  background: #374355;
+  opacity: .4;
+  filter: alpha(opacity=40);
+}
+
+.mfp-iframe-holder {
+  .mfp-content {
+    max-width: 770px;
+    padding: 10px;
+  }
+}
+
+.webform-overlay {
+  padding: 0;
+  height: 200px;
+  @include transition(height .2s ease-in);
+
+  iframe {
+    background-color: #fff;
+    padding: 20px 20px 0;
+    @include box-shadow(none);
+    @include border-radius($borderRadius);
+    @extend %loader;
+  }
+}
+
+.page-node-overlay {
+  min-width: 0;
+  height: auto;
+  background: #fff;
+  overflow: hidden;
+
+  #mainOverlay {
+    font-size: 87.5%;
+    padding: 17px 20px 0;
+  }
+
+  #systemMain {
+    padding: 0;
+  }
+
+  .title {
+    margin: 0 0 5px;
+  }
+
+  .close {
+    width: 12px;
+    height: 12px;
+    background-position: -80px -65px;
+    position: absolute;
+    right: 0;
+    top: 0;
+    cursor: pointer;
+    z-index: 99;
+  }
+
+  .messages {
+    margin: 10px 0;
+  }
+
+  p {
+    margin: 0 0 17px;
+  }
+}
+
+.node-webform {
+  .webform-client-form {
+    border-top: 1px solid $neutralColor;
+    padding: 25px 0 0;
+  }
+}

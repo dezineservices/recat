@@ -89,3 +89,59 @@ textarea {
 .form-textarea-wrapper {
   margin: 0 0 25px;
 }
+
+.webform-component-markup {
+  border-top: 1px solid $neutralColor;
+  font-size: 90%;
+  padding: 14px 0 0;
+  clear: both;
+}
+
+.webform-component-fieldset {
+  float: left;
+  width: 50%;
+  padding: 0 0 0 25px;
+  position: relative;
+
+  &:first-child {
+    padding: 0 25px 0 0;
+
+    &:before {
+      display: none;
+    }
+  }
+
+  &:before {
+    @include before-element;
+    width: 1px;
+    top: 0;
+    bottom: 25px;
+    margin: 0 0 0 -25px;
+    background: $neutralColor;
+  }
+}
+
+.webform-component-email {
+  position: relative;
+
+  &:before {
+    @include before-element;
+    @extend %sprite;
+    width: 16px;
+    height: 13px;
+    left: 18px;
+    top: 16px;
+    background-position: -36px -46px;
+  }
+
+  input[type="email"] {
+    padding-left: 45px;
+  }
+}
+
+.form-item {
+  .description {
+    font-size: 80%;
+    margin: -20px 0 20px;
+  }
+}

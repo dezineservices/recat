@@ -5,9 +5,9 @@
         .module('recatLibrary')
         .controller('ListingController', ListingController);
 
-    ListingController.$inject = ['$scope', 'core.service.library'];
+    ListingController.$inject = ['$scope', '$element', 'core.service.library'];
 
-    function ListingController ($scope, service) {
+    function ListingController ($scope, $element, service) {
         var MAX_PAGER_BUTTONS = 9;
 
         var vm = this,
@@ -57,15 +57,22 @@
             loadData();
         }
 
-        function downloadFile (url) {
-            if (!url) {
+        function downloadFile (file) {
+            if (!file.url) {
                 return;
             }
 
-            document.location = url;
+            if (!file.private || !doesOverlayExists()) {
+                document.location = file.url;
+                return;
+            }
+
+            Drupal.behaviors.recatWfOverlay.openOverlayer(file.url);
         }
 
         function loadData () {
+            handleOverlay(true);
+
             vm.loading = true;
             service.getFiles(vm.currentPage, currentTags).then(handleSuccess, handleError);
         }
@@ -129,6 +136,8 @@
             vm.totalPages = data.pager.pages;
 
             vm.pages = generatePager();
+
+            setTimeout(handleOverlay, 100);
         }
 
         function handleError (errorData) {
@@ -139,6 +148,23 @@
             vm.currentPage = vm.totalPages = 0;
 
             vm.errorMessage = errorData.text;
+        }
+
+        function handleOverlay (doUnbind) {
+            if (!doesOverlayExists()) {
+                return;
+            }
+
+            if (doUnbind) {
+                Drupal.behaviors.recatWfOverlay.detach($element);
+                return;
+            }
+
+            Drupal.behaviors.recatWfOverlay.attach($element);
+        }
+
+        function doesOverlayExists () {
+            return Drupal && Drupal.behaviors && Drupal.behaviors.recatWfOverlay;
         }
     }
 })();

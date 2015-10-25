@@ -14,9 +14,9 @@
                     </tr>
                 </thead>
                 <tbody data-ng-if="listing.nodes.length">
-                    <tr data-ng-repeat="node in listing.nodes track by node.nid" data-ng-click="listing.downloadFile(node.url)">
+                    <tr data-ng-repeat="node in listing.nodes track by node.nid" data-ng-click="listing.downloadFile(node)">
                         <td class="icon-column"><i class="sprite icon-lock" data-ng-class="{ unlocked: !node.private, locked: node.private }"></i></td>
-                        <td><a data-ng-href="{{ node.url }}">{{ node.title }}</a></td>
+                        <td><a data-ng-href="{{ node.url }}" data-ng-class="{ 'js-recatWfOverlay': node.private }">{{ node.title }}</a></td>
                         <td>{{ node.tags }}</td>
                         <td>{{ node.date }}</td>
                     </tr>
@@ -43,7 +43,7 @@
                 </ul>
             </div>
 
-            <span class="loader" ng-show="listing.loading"></span>
+            <span class="loader" data-ng-show="listing.loading"></span>
         </div>
     </div>
 </div>

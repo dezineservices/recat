@@ -31,6 +31,12 @@ div.messages {
   p, ul {
     margin-bottom: 0;
   }
+
+  li {
+    &:before {
+      color: #fff;
+    }
+  }
 }
 
 div.status {

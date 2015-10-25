@@ -9,6 +9,20 @@ function recat_library_admin($form, &$form_state) {
         '#tree' => true,
     );
 
+    $webforms = array();
+    foreach (_recat_library_admin_get_webforms() as $nid => $webform) {
+        $webforms[$nid] = $webform->title;
+    }
+
+    $form[$key]['webform'] = array(
+        '#type' => 'select',
+        '#title' => t('Webform'),
+        '#description' => t('Webform shown for private file request'),
+        '#required' => true,
+        '#options' => $webforms,
+        '#default_value' => $settings ? $settings['webform'] : '',
+    );
+
     $items_per_page = array();
     for ($i = 1; $i < 102; $i += 5) {
         $items_per_page[$i - ($i === 1 ? 0 : 1)] = $i - ($i === 1 ? 0 : 1);
@@ -72,4 +86,20 @@ function recat_library_admin($form, &$form_state) {
     );
 
     return system_settings_form($form);
+}
+
+function _recat_library_admin_get_webforms() {
+    global $language;
+
+    $query = db_select('node', 'n');
+
+    $query
+        ->fields('n', array('nid', 'title'))
+        ->condition('status', 1)
+        ->condition('language', $language->language)
+        ->condition('type', 'webform')
+        ->orderBy('title')
+        ->addTag('node_access');
+
+    return $query->execute()->fetchAllAssoc('nid');
 }

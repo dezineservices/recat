@@ -42,15 +42,25 @@ function recat_library_ajax() {
                 $tags[] = $tag->name;
             }
 
+            $url = '';
+            if ($node_wrapper->field_private->value() === false) {
+                $url = url(_recat_library_get_url('download', $field_file['hash']), array(
+                    'absolute' => true,
+                ));
+            } else {
+                $url = url(_recat_wf_overlay_get_url($settings['webform']), array(
+                    'absolute' => true,
+                    'query' => array('nid' => $nid),
+                ));
+            }
+
             $output['nodes'][] = array(
                 'nid' => $nid,
                 'title' => $node->title,
                 'tags' => !empty($tags) ? join(', ', $tags) : null,
                 'date' => format_date($node->created, $settings['date_format']),
                 'private' => $node_wrapper->field_private->value(),
-                'url' => url(_recat_library_get_url('download', $field_file['hash']), array(
-                    'absolute' => true,
-                )),
+                'url' => $url,
             );
         }
 

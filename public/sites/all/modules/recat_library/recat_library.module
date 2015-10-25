@@ -93,6 +93,33 @@ function recat_library_block_view($delta = '') {
     }
 }
 
+function recat_library_webform_submission_presave($node, &$submission) {
+    $cid_recat_file = false;
+    foreach ($node->webform['components'] as $component) {
+        if ($component['form_key'] === 'recat_file') {
+            $cid_recat_file = $component['cid'];
+            continue;
+        }
+    }
+
+    if ($cid_recat_file === false) {
+        return;
+    }
+
+    if (!isset($submission->data[$cid_recat_file])
+        || empty($submission->data[$cid_recat_file][0])) {
+        return;
+    }
+
+    $node = node_load($submission->data[$cid_recat_file][0]);
+    if (!$node) {
+        return;
+    }
+
+    $value = sprintf('%s (node/%d)', $node->title, $node->nid);
+    $submission->data[$cid_recat_file][0] = $value;
+}
+
 function _recat_library_get_url($type = 'ajax', $parameter = false) {
     $url = '';
     switch ($type) {

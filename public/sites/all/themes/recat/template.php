@@ -97,7 +97,7 @@ function _recat_preprocess_page_title(&$variables) {
     if (count($active_trail) < 2) {
         return;
     }
-    
+
     $variables['heading_title'] = $active_trail[0]['title'];
 }
 
@@ -120,7 +120,7 @@ function _recat_preprocess_page_main_content(&$variables) {
 
     if (isset($variables['node'])) {
         $variables['has_main_content'] = false;
-        foreach (array('body', 'picture') as $field) {
+        foreach (array('body', 'picture', 'webform') as $field) {
             if (!isset($variables['node']->$field)) {
                 continue;
             }

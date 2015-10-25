@@ -1,0 +1,110 @@
+<?php
+
+function recat_wf_overlay_init() {
+    $path = drupal_get_path('module', 'recat_wf_overlay');
+
+    drupal_add_css($path . '/css/magnific-popup.css');
+
+    drupal_add_js($path . '/js/jquery.magnific-popup.min.js');
+    drupal_add_js($path . '/js/recat_wf_overlay.js');
+}
+
+function recat_wf_overlay_menu() {
+    $items[_recat_wf_overlay_get_url()] = array(
+        'title callback' => 'recat_wf_overlay_page_title',
+        'title arguments' => array(1),
+        'page callback' => 'recat_wf_overlay_page_view',
+        'page arguments' => array(1),
+        'access callback' => 'node_access',
+        'access arguments' => array('view', 1),
+    );
+
+    return $items;
+}
+
+function recat_wf_overlay_theme() {
+    return array(
+        'recat_wf_overlay' => array(
+            'template' => 'templates/page-overlay',
+            'render element' => 'page',
+        ),
+    );
+}
+
+function recat_wf_overlay_page_title($node) {
+    return node_page_title($node);
+}
+
+function recat_wf_overlay_page_view($node) {
+    return node_page_view($node);
+}
+
+function recat_wf_overlay_page_alter(&$page) {
+    global $theme;
+
+    $active_trails = menu_get_active_trail();
+    if (!isset($active_trails[count($active_trails) - 1]['link_path'])) {
+        return false;
+    }
+
+    if ($active_trails[count($active_trails) - 1]['link_path']
+        !== str_replace('%node', '%', _recat_wf_overlay_get_url())) {
+        return false;
+    }
+
+    $regions = system_region_list($theme);
+    foreach (array_keys($regions) as $region) {
+        if ($region === 'content' || !isset($page[$region])) {
+            continue;
+        }
+
+        unset($page[$region]);
+    }
+
+    $page['#theme'] = 'recat_wf_overlay';
+}
+
+function recat_wf_overlay_form_alter(&$form, &$form_state, $form_id) {
+    if (strpos($form_id, 'webform') === false) {
+        return;
+    }
+
+    if (!isset($form['submitted'])) {
+        return;
+    }
+
+    _recat_wf_overlay_inject_submit_action($form, $form['submitted']);
+
+}
+
+function template_preprocess_recat_wf_overlay(&$variables) {
+    template_preprocess_page($variables);
+}
+
+function template_process_recat_wf_overlay(&$variables) {
+    template_process_page($variables);
+}
+
+function _recat_wf_overlay_get_url($nid = '%node') {
+    return sprintf('node/%s/overlay', $nid);
+}
+
+function _recat_wf_overlay_inject_submit_action(&$form, &$components) {
+    $field = null;
+    foreach (element_children($components) as $component) {
+        $field = &$components[$component];
+        if (element_children($field)) {
+            _recat_wf_overlay_inject_submit_action($form, $field);
+        }
+
+        if ($field['#webform_component']['type'] !== 'hidden'
+            || $field['#webform_component']['form_key'] !== 'submit_button') {
+            continue;
+        }
+
+        if (isset($form['actions'])) {
+            $components['actions'] = $form['actions'];
+            $form['actions']['#access'] = false;
+        }
+    }
+}

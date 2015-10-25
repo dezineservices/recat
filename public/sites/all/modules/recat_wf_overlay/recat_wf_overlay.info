@@ -1,0 +1,5 @@
+name = Recat webform overlay
+description = Provides an extra menu router to view webforms in overlay
+package = Recat
+core = 7.x
+version = 7.x-0.1
