@@ -29,6 +29,7 @@ function recat_preprocess_page(&$variables) {
     _recat_preprocess_page_main_content($variables);
     _recat_preprocess_page_block_reference($variables);
     _recat_preprocess_page_news($variables);
+    _recat_preprocess_page_search($variables);
 }
 
 function recat_preprocess_node(&$variables) {
@@ -57,6 +58,11 @@ function recat_preprocess_block(&$variables) {
             break;
 
     }
+}
+
+function recat_preprocess_search_results(&$variables) {
+    $pager = _recat_core_get_pager_build();
+    $variables['pager'] = drupal_render($pager);
 }
 
 function recat_form_alter(&$form, &$form_state, $form_id) {
@@ -183,6 +189,15 @@ function _recat_preprocess_page_news(&$variables) {
     }
 
     $variables['is_colored'] = true;
+}
+
+function _recat_preprocess_page_search(&$variables) {
+    if (!$variables['page']['content']['system_main']
+        || !isset($variables['page']['content']['system_main']['search_form'])) {
+
+    }
+
+    $variables['page']['content']['system_main']['search_form']['#access'] = false;
 }
 
 function _recat_search_form_alter(&$form) {

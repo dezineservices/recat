@@ -3,8 +3,10 @@
         <i class="icon <?php print $icon; ?> sprite"></i>
     </span>
 
-    <h1 class="title"><?php print $title; ?></h1>
-    <p class="content narrow"><?php print $content; ?></p>
+    <h1 class="title" data-equalheight-part>
+        <a href="<?php print url($url); ?>"><?php print $title; ?></a>
+    </h1>
+    <p class="content narrow" data-equalheight-part><?php print $content; ?></p>
 
     <?php if ($url): ?>
     <p>

@@ -48,7 +48,7 @@ function _recat_news_block_view($key) {
             '#theme' => 'recat_news_listing',
             '#teasers' => $teasers
         ),
-        'pager' => _recat_news_get_pager_build(),
+        'pager' => _recat_core_get_pager_build(),
     );
 }
 

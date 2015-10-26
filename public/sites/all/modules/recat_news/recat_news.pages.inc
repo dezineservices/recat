@@ -26,6 +26,6 @@ function recat_news_taxonomy_page($term) {
             '#teasers' => $teasers,
             '#item_per_line' => 2,
         ),
-        'pager' => _recat_news_get_pager_build(),
+        'pager' => _recat_core_get_pager_build(),
     );
 }

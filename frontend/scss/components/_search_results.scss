@@ -1,0 +1,32 @@
+.search-results {
+  margin: 0 0 35px;
+  list-style: none outside none;
+
+  .search-result {
+    border-top: 1px solid $neutralColor;
+    margin: 0;
+    padding: 25px 0;
+
+    &:first-child {
+      border-top: none;
+      padding-top: 0;
+    }
+  }
+
+  .search-title {
+    color: $fontColorTitle;
+    margin: 0 0 10px;
+
+    a {
+      color: inherit;
+
+      &:hover {
+        color: $linkColorHover;
+      }
+    }
+  }
+
+  .search-snippet {
+    margin: 0;
+  }
+}

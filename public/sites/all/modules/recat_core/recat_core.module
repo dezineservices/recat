@@ -58,6 +58,14 @@ function recat_core_wysiwyg_editor_settings_alter(&$settings, $context) {
         '%s%s/ckeditor/config.js', base_path(), drupal_get_path('theme', 'recat'));
 }
 
+function _recat_core_get_pager_build($quantity = 10) {
+    return array(
+        '#theme' => 'pager',
+        '#tags' => array(t('first'), t('prev'), null, t('next'), t('last')),
+        '#quantity' => $quantity,
+    );
+}
+
 function _recat_core_save_hash_for_fid($fid, $hash = null) {
     return db_update('file_managed')
         ->fields(array(
