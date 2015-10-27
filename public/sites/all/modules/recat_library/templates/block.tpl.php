@@ -1,8 +1,12 @@
 <div class="row" data-ng-app="recatLibrary" data-ng-controller="ListingController as listing">
+    <?php if ($tags): ?>
     <div class="columns-sidebar columns small-12 medium-3">
         <?php print drupal_render($tags); ?>
     </div>
     <div class="columns-content columns small-12 medium-9 large-push-1 large-8 end">
+    <?php else: ?>
+    <div class="columns small-12">
+    <?php endif; ?>
         <div class="library relative ag-app" data-ng-class="{ loaded: listing.loaded }">
             <table class="tbl-library" cellspacing="0" cellpadding="0" data-ng-class="{ 'tbl-hover': listing.nodes.length }">
                 <thead>

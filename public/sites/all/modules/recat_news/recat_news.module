@@ -3,14 +3,6 @@
 define('RECAT_NEWS_TAGS_VOCABULARY_NAME', 'news_tags');
 define('RECAT_NEWS_CATEGORIES_VOCABULARY_NAME', 'news_categories');
 
-function recat_news_module_implements_alter(&$implementations, $hook) {
-    if ($hook == 'menu_alter') {
-        $group = $implementations['recat_news'];
-        unset($implementations['recat_news']);
-        $implementations['recat_news'] = $group;
-    }
-}
-
 function recat_news_menu() {
     $items = array();
     $items['admin/config/recat/news'] = array(

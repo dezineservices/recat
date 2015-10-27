@@ -1,14 +1,6 @@
 <?php
 
 function recat_news_taxonomy_page($term) {
-    if (!_recat_news_is_taxonomy_page($term)) {
-        if (module_exists('i18n_taxonomy')) {
-            return i18n_taxonomy_term_page($term);
-        }
-
-        return taxonomy_term_page($term);
-    }
-
     $settings = _recat_news_get_settings();
     $teasers = array();
 

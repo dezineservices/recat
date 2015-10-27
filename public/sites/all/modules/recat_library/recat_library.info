@@ -4,6 +4,7 @@ package = Recat
 core = 7.x
 version = 7.x-0.1
 
+dependencies[] = shortcode
 dependencies[] = hs_resource
 dependencies[] = recat_core
 dependencies[] = recat_wf_overlay

@@ -23,7 +23,7 @@ function _recat_library_block_save($form_state, $key) {
     // nothing to save
 }
 
-function _recat_library_block_view($key) {
+function _recat_library_block_view() {
     $vocabulary = _recat_library_get_vocabulary();
     $tags = _recat_library_get_tags();
 
@@ -31,6 +31,21 @@ function _recat_library_block_view($key) {
         return;
     }
 
+    $build = _recat_library_block_get_build();
+    $build['#tags'] = array(
+        '#theme' => 'recat_library_tags',
+        '#title' => $vocabulary->name,
+        '#tags' => $tags,
+    );
+
+    return $build;
+}
+
+function _recat_library_block_simple_view() {
+    return _recat_library_block_get_build();
+}
+
+function _recat_library_block_get_build() {
     return array(
         '#attached' => array(
             'js' => array(
@@ -49,10 +64,5 @@ function _recat_library_block_view($key) {
             ),
         ),
         '#theme' => 'recat_library',
-        '#tags' => array(
-            '#theme' => 'recat_library_tags',
-            '#title' => $vocabulary->name,
-            '#tags' => $tags,
-        ),
     );
 }

@@ -9,7 +9,8 @@
 
     .menu {
       line-height: 1.2;
-      white-space: nowrap;
+      max-width: 400px;
+      min-width: 250px;
       position: absolute;
       text-transform: none;
       padding: 10px 0 0;
@@ -37,7 +38,7 @@
 
         &.last {
           padding: 0 0 6px;
-          @include border-radius(0 0 $borderRadius);
+          @include border-radius(0 0 $borderRadius $borderRadius);
         }
       }
 

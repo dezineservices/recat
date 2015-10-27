@@ -37,6 +37,7 @@ function _recat_blocks_submenu_save($form_state, $key) {
 
 function _recat_blocks_submenu_view($key) {
     $settings = _recat_blocks_get_settings($key);
+    $menu_item = menu_get_item();
 
     $link = _recat_blocks_submenu_get_root_link();
     if (!$link) {
@@ -48,7 +49,9 @@ function _recat_blocks_submenu_view($key) {
         return;
     }
 
+    recat_blocks_submenu_active_trail($menu_tree['below'], $menu_item);
     $links = menu_tree_output($menu_tree['below']);
+
     if (empty($links)) {
         return;
     }
@@ -86,4 +89,25 @@ function _recat_blocks_submenu_get_tree($mlid, $menu_name, $max_depth) {
     }
 
     return array();
+}
+
+function recat_blocks_submenu_active_trail(&$tree_data, $menu_item) {
+    $is_front_page = drupal_is_front_page();
+
+    foreach ($tree_data as $key => &$item) {
+        if (!empty($item['link']) && ($item['link']['href'] === $menu_item['href']
+                || ($item['link']['href'] === '<front>' && $is_front_page))) {
+            $item['link']['in_active_trail'] = true;
+            return true;
+        } else {
+            if (!empty($item['below'])) {
+                if (recat_blocks_submenu_active_trail($item['below'], $menu_item)) {
+                    $item['link']['in_active_trail'] = true;
+                    return true;
+                }
+            }
+        }
+    }
+
+    return false;
 }

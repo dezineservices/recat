@@ -107,6 +107,8 @@ section.block,
   }
 
   .menu {
+    margin: 0 0 0 1px;
+
     a {
       color: $fontColorBase;
       padding: 13px 50px 13px 30px;
@@ -124,7 +126,16 @@ section.block,
         @include transition(transform .2s ease-in-out);
       }
 
-      &.active,
+      &:after {
+        @include before-element;
+        width: 2px;
+        background: $brandColor;
+        top: 0;
+        left: 0;
+        bottom: 0;
+        display: none;
+      }
+
       &:hover {
         background: #fff;
 
@@ -132,14 +143,69 @@ section.block,
           @include transform(translateX(5px));
         }
       }
-    }
-  }
 
-  ul {
-    margin: 0;
+      &.active {
+        background: #fff;
+        color: $linkColor;
+
+        &:after {
+          display: block;
+        }
+      }
+    }
+
+    li {
+      &.active-trail {
+        a {
+          background: #fff;
+
+          &:after {
+            display: block;
+          }
+        }
+
+        ul {
+          display: block;
+        }
+
+        &.expanded {
+          a {
+            &:before {
+              @include transform(rotate(90deg));
+            }
+          }
+        }
+      }
+    }
 
     ul {
+      background: #fff;
+      position: relative;
+      font-size: 85%;
+      padding: 0 0 10px;
+      margin: 0;
       display: none;
+
+      &:after {
+        @include before-element;
+        width: 2px;
+        background: $brandColor;
+        top: 0;
+        left: 0;
+        bottom: 0;
+      }
+
+      a {
+        padding: 9px 30px 9px 50px;
+
+        &:before {
+          display: none;
+        }
+
+        &:hover {
+          color: $linkColor;
+        }
+      }
     }
   }
 

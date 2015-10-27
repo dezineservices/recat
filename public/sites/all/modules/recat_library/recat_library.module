@@ -61,7 +61,99 @@ function recat_library_block_info() {
         'pages' => '',
     );
 
+
+    $blocks['recat_library_simple'] = array(
+        'info' => t('Files library simple'),
+        'cache' => DRUPAL_NO_CACHE,
+        'visibility' => BLOCK_VISIBILITY_NOTLISTED,
+        'pages' => '',
+    );
+
     return $blocks;
+}
+
+function recat_library_shortcode_info() {
+    $shortcodes = array();
+
+    $shortcodes['recat_library'] = array(
+        'title' => t('Recat library'),
+        'description' => t('Embed recat library block'),
+        'process callback' => 'recat_library_shortcode_block_process',
+        'tips callback' => 'recat_library_shortcode_block_tips',
+        'default settings' => array(),
+    );
+
+    return $shortcodes;
+}
+
+function recat_library_shortcode_block_process($attrs) {
+    if (!isset($attrs['tag']) || empty($attrs['tag'])) {
+        return;
+    }
+
+    $tag = taxonomy_get_term_by_name($attrs['tag']);
+    if (!$tag) {
+        return;
+    }
+
+    $tag = array_shift($tag);
+    $vocabulary = taxonomy_vocabulary_load($tag->vid);
+
+    if (!$vocabulary || $vocabulary->machine_name !== RECAT_LIBRARY_VOCABULARY_NAME) {
+        return;
+    }
+
+    return sprintf('[recat_library tid="%d" /]', $tag->tid);
+}
+
+function recat_library_shortcode_block_tips() {
+    return '<p><strong>[recat_library tag="term_name"]</strong>';
+}
+
+function recat_library_field_attach_view_alter(&$output, $context) {
+    $fieldName = array_keys($output);
+
+    if ($items = field_get_items($context['entity_type'], $context['entity'], $fieldName[0])) {
+        $parseForCode = array();
+        foreach ($items as $key => $item) {
+            if (isset($item['format'])) {
+                $codes = shortcode_list_all_enabled($item['format']);
+                if (isset($codes['recat_library'])) {
+                    $parseForCode[] = $key;
+                }
+            }
+        }
+
+        foreach ($parseForCode as $key) {
+            if (isset($output[$fieldName[0]][$key]['#markup'])) {
+                $markup = $output[$fieldName[0]][$key]['#markup'];
+
+                $markup = preg_replace_callback('/(<p>)?\[recat_library(.*?)\/](<\/p>)?/', function ($matches) {
+                    $attributes = array();
+                    preg_match_all('/(tid)\=[\"](.*?)[\"]/', $matches[2], $attributes);
+
+                    $tid = $attributes[2][array_search('tid', $attributes[1])];
+                    $term = taxonomy_term_load($tid);
+
+                    $block = block_load('recat_library', 'recat_library_simple');
+                    $block_renderable = _block_get_renderable_array(
+                        _block_render_blocks(array($block))
+                    );
+
+                    $block_renderable['recat_library_recat_library_simple']['#attached']['js'][] = array(
+                        'data' => array('recatLibrary' => array(
+                            'tid' => $term->tid,
+                        )),
+                        'type' => 'setting',
+                    );
+
+                    return render($block_renderable);
+                }, $markup);
+
+                $output[$fieldName[0]][$key]['#markup'] = $markup;
+            }
+        }
+    }
 }
 
 function recat_library_block_configure($delta = '') {
@@ -89,6 +181,12 @@ function recat_library_block_view($delta = '') {
             return array(
                 'title' => '<none>',
                 'content' => _recat_library_block_view($delta),
+            );
+        case 'recat_library_simple':
+            module_load_include('blocks.inc', 'recat_library', 'recat_library');
+            return array(
+                'title' => '<none>',
+                'content' => _recat_library_block_simple_view($delta),
             );
     }
 }
@@ -218,4 +316,8 @@ function _recat_library_get_tags() {
 
 function _recat_library_get_settings($key = 'recat_library') {
     return variable_get($key, false);
+}
+
+function _recat_library_is_taxonomy_page($term) {
+    return $term->vocabulary_machine_name === RECAT_LIBRARY_VOCABULARY_NAME;
 }

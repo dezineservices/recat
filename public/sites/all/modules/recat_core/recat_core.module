@@ -2,6 +2,14 @@
 
 define('RECAT_CORE_FILE_SALT', 'Y61N7a-[!S4c.h[F$%O6$wJW/5+,S3=(@obTl$P(JuI=Q$Tr[OI3.*?(2LX@y0 +');
 
+function recat_core_module_implements_alter(&$implementations, $hook) {
+    if ($hook == 'menu_alter') {
+        $group = $implementations['recat_core'];
+        unset($implementations['recat_core']);
+        $implementations['recat_core'] = $group;
+    }
+}
+
 function recat_core_schema_alter(&$schema) {
     $schema['file_managed']['fields']['hash'] = array(
         'type' => 'varchar',
@@ -23,6 +31,13 @@ function recat_core_menu() {
     );
 
     return $items;
+}
+
+function recat_core_menu_alter(&$items) {
+    $items['taxonomy/term/%taxonomy_term']['page callback'] = 'recat_core_taxonomy_page';
+    $items['taxonomy/term/%taxonomy_term']['module'] = 'recat_core';
+    $items['taxonomy/term/%taxonomy_term']['file'] = 'recat_core.pages.inc';
+    $items['taxonomy/term/%taxonomy_term']['file path'] = drupal_get_path('module', 'recat_core');
 }
 
 function recat_core_library() {

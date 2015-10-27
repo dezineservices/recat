@@ -28,6 +28,10 @@
         vm.filterChange = filterChange;
         vm.downloadFile = downloadFile;
 
+        if (Drupal.settings.recatLibrary.tid) {
+            currentTags.push(Drupal.settings.recatLibrary.tid);
+        }
+
         loadData();
 
         function pagePrevious () {
