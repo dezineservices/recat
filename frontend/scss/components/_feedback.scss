@@ -1,0 +1,24 @@
+#recatFeedback {
+  background: #fff;
+  position: relative;
+  padding: 40px 0 5px;
+
+  &:before {
+    @include before-element;
+    background-position: left -107px;
+    background-repeat: repeat-x;
+    height: 5px;
+    top: 0;
+    left: 0;
+    right: 0;
+  }
+
+  .block-title {
+    font-size: 30px;
+    margin: 0 0 7px;
+  }
+
+  p {
+    margin: 0 0 20px;
+  }
+}

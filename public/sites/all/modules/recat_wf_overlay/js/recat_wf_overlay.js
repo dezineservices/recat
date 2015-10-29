@@ -13,7 +13,8 @@
             $(this.ELEMENT_CLOSE_SELECTOR, context).unbind(this.CLICK_EVENT)
         },
         onClick: function () {
-            Drupal.behaviors.recatWfOverlay.openOverlayer(this.href);
+            var href = this.getAttribute('data-href-overlay');
+            Drupal.behaviors.recatWfOverlay.openOverlayer(href || this.href);
             return false;
         },
         onCloseClick: function () {

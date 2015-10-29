@@ -6,6 +6,6 @@ function recat_library_taxonomy_page($term) {
     } else {
         drupal_not_found();
     }
-    
+
     drupal_exit();
 }

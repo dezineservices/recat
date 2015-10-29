@@ -6,3 +6,4 @@ version = 7.x-0.1
 
 dependencies[] = webform
 dependencies[] = hs_resource
+dependencies[] = recat_wf_overlay

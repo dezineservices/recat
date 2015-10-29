@@ -1,0 +1,82 @@
+<?php
+
+function recat_feedback_init() {
+    $path = drupal_get_path('module', 'recat_feedback');
+
+    drupal_add_js($path . '/js/jquery.rating.min.js');
+    drupal_add_js($path . '/js/recat_feedback.js');
+}
+
+function recat_feedback_theme() {
+    return array(
+        'recat_feedback' => array(
+            'template' => 'templates/block',
+            'variables' => array(
+                'content' => null,
+                'cta' => null,
+                'url' => null,
+                'url_overlay' => null,
+            ),
+        ),
+    );
+}
+
+function recat_feedback_block_info() {
+    $blocks = array();
+    $blocks['recat_feedback'] = array(
+        'info' => t('Feedback form'),
+        'cache' => DRUPAL_CACHE_PER_PAGE,
+        'visibility' => BLOCK_VISIBILITY_NOTLISTED,
+        'pages' => '',
+    );
+
+    return $blocks;
+}
+
+function recat_feedback_block_configure($delta = '') {
+    switch ($delta) {
+        case 'recat_feedback':
+            module_load_include('blocks.inc', 'recat_feedback', 'recat_feedback');
+            return _recat_feedback_block_configure($delta);
+
+    }
+}
+
+function recat_feedback_block_save($delta = '', $edit = array()) {
+    switch ($delta) {
+        case 'recat_feedback':
+            module_load_include('blocks.inc', 'recat_feedback', 'recat_feedback');
+            return _recat_feedback_block_save($edit, $delta);
+
+    }
+}
+
+function recat_feedback_block_view($delta = '') {
+    switch ($delta) {
+        case 'recat_feedback':
+            module_load_include('blocks.inc', 'recat_feedback', 'recat_feedback');
+            return array(
+                'content' => _recat_feedback_block_view($delta),
+            );
+    }
+}
+
+function _recat_feedback_get_settings($key) {
+    return variable_get($key, false);
+}
+
+function _recat_feedback_get_webforms() {
+    global $language;
+
+    $query = db_select('node', 'n');
+
+    $query
+        ->fields('n', array('nid', 'title'))
+        ->condition('status', 1)
+        ->condition('language', $language->language)
+        ->condition('type', 'webform')
+        ->orderBy('title')
+        ->addTag('node_access');
+
+    return $query->execute()->fetchAllAssoc('nid');
+}

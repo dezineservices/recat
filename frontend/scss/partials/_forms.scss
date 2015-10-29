@@ -1,3 +1,12 @@
+label {
+  font-weight: 100;
+  font-size: 15px;
+  line-height: 1.5;
+  padding: 2px 0 1px;
+  margin: 10px 0;
+  display: block;
+}
+
 input {
   font-family: $fontForm;
   font-weight: 100;
@@ -25,6 +34,7 @@ input {
     background: $linkColor;
     border: none;
     padding: 14px 16px 13px;
+    margin: 0 0 30px;
     text-align: center;
     cursor: pointer;
     color: #fff;
@@ -38,6 +48,11 @@ input {
   }
 
   &[type="radio"] {
+    position: absolute;
+    width: 13px;
+    height: 13px;
+    margin: 3px 0 0 -26px;
+    padding: 0;
     -webkit-appearance: radio;
   }
 
@@ -52,12 +67,12 @@ input {
 }
 
 .label-winput {
-  font-weight: 100;
-  font-size: 15px;
-  line-height: 1.5;
-  display: block;
-  padding: 2px 0 1px 35px;
-  margin: 10px 0;
+  padding-left: 35px;
+}
+
+select {
+  width: 100%;
+  margin: -5px 0 10px;
 }
 
 textarea {
@@ -115,7 +130,7 @@ textarea {
     @include before-element;
     width: 1px;
     top: 0;
-    bottom: 25px;
+    bottom: 30px;
     margin: 0 0 0 -25px;
     background: $neutralColor;
   }
@@ -143,5 +158,68 @@ textarea {
   .description {
     font-size: 80%;
     margin: -20px 0 20px;
+  }
+}
+
+.form-radios {
+  margin: 10px 0;
+  overflow: hidden;
+
+  label {
+    margin: 0;
+    padding: 0;
+  }
+}
+
+.form-type-radio {
+  float: left;
+  padding: 2px 0 1px 35px;
+  margin: 0 25px 0 0;
+  font-weight: 100;
+  font-size: 15px;
+  line-height: 1.5;
+  display: block;
+}
+
+.form-radios-ratingstars {
+  .form-type-radio,
+  label {
+    display: none;
+  }
+
+  .form-radios-ratingstar {
+    display: block;
+    float: none;
+    margin: 5px 0 15px;
+    padding: 0;
+  }
+}
+
+.star-rating-control {
+  display: block;
+  overflow: hidden;
+
+  .star-rating {
+    @extend %sprite;
+    width: 16px;
+    height: 15px;
+    background-position: -57px -63px;
+    float: left;
+    margin: 0 2px 0 0;
+    position: relative;
+
+    a {
+      left: 0;
+      right: 0;
+      top: 0;
+      bottom: 0;
+      position: absolute;
+      font-size: 0;
+    }
+  }
+
+  .star-rating-on,
+  .star-rating-hover {
+    background-position: -35px -63px;
   }
 }

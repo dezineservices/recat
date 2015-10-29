@@ -34,6 +34,14 @@ a.btn {
   color: #fff;
 }
 
+.btn-alt {
+  background: #04be5b;
+
+  &:hover {
+    background: adjust-lightness(#04be5b, 5%);
+  }
+}
+
 .btn-bordered {
   color: $linkColor;
   border: 1px solid $linkColor;

@@ -19,10 +19,6 @@ function _recat_library_block_configure($key) {
     return $form;
 }
 
-function _recat_library_block_save($form_state, $key) {
-    // nothing to save
-}
-
 function _recat_library_block_view() {
     $vocabulary = _recat_library_get_vocabulary();
     $tags = _recat_library_get_tags();

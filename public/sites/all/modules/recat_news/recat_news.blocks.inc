@@ -23,7 +23,6 @@ function _recat_news_block_save($form_state, $key) {
     // nothing to save
 }
 
-
 function _recat_news_block_view($key) {
     $settings = _recat_news_get_settings();
     $nids = _recat_news_get_nodes($settings['items_per_page'], true);

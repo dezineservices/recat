@@ -44,10 +44,14 @@ function recat_preprocess_node(&$variables) {
 function recat_preprocess_block(&$variables) {
     $variables['block_html_id'] = str_replace('BlocksRecatBlocks', '', $variables['block_html_id']);
     $variables['block_html_id'] = str_replace('RecatNews', '', $variables['block_html_id']);
+    $variables['block_html_id'] = str_replace('RecatFeedback', '', $variables['block_html_id']);
 
     switch ($variables['block_html_id']) {
         case 'recatNews':
             $variables['classes_array'][] = 'block-neutral';
+            break;
+        case 'recatFeedback':
+            $variables['classes_array'][] = 'sprite-before';
             break;
         case 'recatNewsTags':
         case 'recatNewsCategories':

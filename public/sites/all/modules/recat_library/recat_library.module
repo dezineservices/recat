@@ -72,6 +72,33 @@ function recat_library_block_info() {
     return $blocks;
 }
 
+function recat_library_block_configure($delta = '') {
+    switch ($delta) {
+        case 'recat_library':
+        case 'recat_library_simple':
+            module_load_include('blocks.inc', 'recat_library', 'recat_library');
+            return _recat_library_block_configure($delta);
+
+    }
+}
+
+function recat_library_block_view($delta = '') {
+    switch ($delta) {
+        case 'recat_library':
+            module_load_include('blocks.inc', 'recat_library', 'recat_library');
+            return array(
+                'title' => '<none>',
+                'content' => _recat_library_block_view($delta),
+            );
+        case 'recat_library_simple':
+            module_load_include('blocks.inc', 'recat_library', 'recat_library');
+            return array(
+                'title' => '<none>',
+                'content' => _recat_library_block_simple_view($delta),
+            );
+    }
+}
+
 function recat_library_shortcode_info() {
     $shortcodes = array();
 
@@ -153,41 +180,6 @@ function recat_library_field_attach_view_alter(&$output, $context) {
                 $output[$fieldName[0]][$key]['#markup'] = $markup;
             }
         }
-    }
-}
-
-function recat_library_block_configure($delta = '') {
-    switch ($delta) {
-        case 'recat_library':
-            module_load_include('blocks.inc', 'recat_library', 'recat_library');
-            return _recat_library_block_configure($delta);
-
-    }
-}
-
-function recat_library_block_save($delta = '', $edit = array()) {
-    switch ($delta) {
-        case 'recat_library':
-            module_load_include('blocks.inc', 'recat_library', 'recat_library');
-            return _recat_library_block_save($edit, $delta);
-
-    }
-}
-
-function recat_library_block_view($delta = '') {
-    switch ($delta) {
-        case 'recat_library':
-            module_load_include('blocks.inc', 'recat_library', 'recat_library');
-            return array(
-                'title' => '<none>',
-                'content' => _recat_library_block_view($delta),
-            );
-        case 'recat_library_simple':
-            module_load_include('blocks.inc', 'recat_library', 'recat_library');
-            return array(
-                'title' => '<none>',
-                'content' => _recat_library_block_simple_view($delta),
-            );
     }
 }
 
