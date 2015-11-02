@@ -78,6 +78,7 @@
   }
 
   ul {
+    list-style: none outside none;
     @include media-query-list-property(margin, $unorderedListSpacing);
 
     li {

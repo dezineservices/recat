@@ -217,6 +217,19 @@ section.block,
       @include before-reset;
     }
   }
+
+  .counter {
+    float: right;
+    color: #fff;
+    background: $brandColor;
+    font-weight: 500;
+    font-size: 13px;
+    text-align: center;
+    min-width: 32px;
+    padding: 2px 5px;
+    margin: -1px -10px 0 0;
+    @include border-radius(20px);
+  }
 }
 
 #main.colored {

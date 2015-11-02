@@ -8,13 +8,13 @@
     <div class="columns small-12">
     <?php endif; ?>
         <div class="library relative ag-app" data-ng-class="{ loaded: listing.loaded }">
-            <table class="tbl-library" cellspacing="0" cellpadding="0" data-ng-class="{ 'tbl-hover': listing.nodes.length }">
+            <table class="tbl-listing tbl-library" cellspacing="0" cellpadding="0" data-ng-class="{ 'tbl-hover': listing.nodes.length }">
                 <thead>
                     <tr>
                         <th class="icon-column"><i class="sprite icon-lock"></i></th>
-                        <th>Document Title</th>
-                        <th>Tags</th>
-                        <th>Date</th>
+                        <th data-ng-non-bindable><?php print _hs_resource_get('recat_library.table.document_title'); ?></th>
+                        <th data-ng-non-bindable><?php print _hs_resource_get('recat_library.table.tags'); ?></th>
+                        <th data-ng-non-bindable><?php print _hs_resource_get('recat_library.table.date'); ?></th>
                     </tr>
                 </thead>
                 <tbody data-ng-if="listing.nodes.length">

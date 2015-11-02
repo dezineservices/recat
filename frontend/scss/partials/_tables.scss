@@ -68,3 +68,13 @@ table {
     }
   }
 }
+
+.tbl-listing {
+  a {
+    color: $fontColorBase;
+
+    &:hover {
+      color: $linkColor;
+    }
+  }
+}

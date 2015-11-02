@@ -61,7 +61,6 @@ function recat_library_block_info() {
         'pages' => '',
     );
 
-
     $blocks['recat_library_simple'] = array(
         'info' => t('Files library simple'),
         'cache' => DRUPAL_NO_CACHE,

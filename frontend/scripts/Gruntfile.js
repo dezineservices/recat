@@ -12,6 +12,14 @@ module.exports = function(grunt) {
                         'recat-library/**/*.js'
                     ]
                 }
+            },
+            recatActivity: {
+                files: {
+                    '<%= pkg.drupalPath %>/recat_activity/js/recat_activity.min.js': [
+                        'recat-activity/src/recatActivity.js',
+                        'recat-activity/**/*.js'
+                    ]
+                }
             }
         },
         watch: {

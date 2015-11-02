@@ -11,6 +11,11 @@ function recat_core_taxonomy_page($term) {
         return recat_library_taxonomy_page($term);
     }
 
+    if (_recat_activity_is_taxonomy_page($term)) {
+        module_load_include('inc', 'recat_activity', 'recat_activity.pages');
+        return recat_activity_taxonomy_page($term);
+    }
+
     if (module_exists('i18n_taxonomy')) {
         module_load_include('inc', 'i18n_taxonomy', 'i18n_taxonomy.pages');
         return i18n_taxonomy_term_page($term);

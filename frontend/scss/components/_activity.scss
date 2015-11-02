@@ -1,0 +1,32 @@
+.tbl-activity {
+  .state {
+    display: block;
+    width: 80px;
+    margin: -1px auto 0;
+    white-space: nowrap;
+    font-size: 11px;
+    font-weight: 500;
+    text-align: center;
+    text-transform: uppercase;
+    padding: 8px 0 6px;
+    color: #fff;
+    background: $brandColor;
+    @include border-radius($borderRadius);
+
+    &.ongoing {
+      background: #a93aba;
+    }
+
+    &.planned {
+      background: #ff9948;
+    }
+
+    &.completed {
+      background: #04be5b;
+    }
+  }
+
+  .fixed-size {
+    width: 100px;
+  }
+}

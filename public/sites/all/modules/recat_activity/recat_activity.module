@@ -1,0 +1,206 @@
+<?php
+
+define('RECAT_ACTIVITY_VOCABULARY_NAME', 'activities');
+
+function recat_activity_menu() {
+    $items = array();
+    $items['admin/config/recat/activity'] = array(
+        'title' => t('Activity settings'),
+        'description' => t('Change the different activity overview settings.'),
+        'page callback' => 'drupal_get_form',
+        'page arguments' => array('recat_activity_admin'),
+        'access arguments' => array('administer site configuration'),
+        'file' => 'recat_activity.admin.inc',
+    );
+
+    $items[_recat_activity_get_url()] = array(
+        'title' => 'Recat activity service',
+        'page callback' => 'recat_activity_ajax',
+        'delivery callback' => 'drupal_json_output',
+        'access arguments' => array('access content'),
+        'type' => MENU_CALLBACK,
+        'file' => 'recat_activity.ajax.inc',
+    );
+
+    return $items;
+}
+
+function recat_activity_theme() {
+    return array(
+        'recat_activity_overview' => array(
+            'template' => 'templates/overview',
+            'variables' => array(
+                'title' => null,
+                'subtitle' => null,
+                'content' => null,
+            ),
+        ),
+        'recat_activity_table' => array(
+            'template' => 'templates/table',
+            'variables' => array(
+                'term' => null,
+            ),
+        ),
+        'recat_activity_sidebar' => array(
+            'template' => 'templates/sidebar',
+            'variables' => array(
+                'terms' => null,
+            ),
+        ),
+    );
+}
+
+function recat_activity_block_info() {
+    $blocks = array();
+    $blocks['recat_activity'] = array(
+        'info' => t('Activities sidebar'),
+        'cache' => DRUPAL_CACHE_PER_PAGE,
+        'visibility' => BLOCK_VISIBILITY_NOTLISTED,
+        'pages' => '',
+    );
+
+    return $blocks;
+}
+
+function recat_activity_block_configure($delta = '') {
+    switch ($delta) {
+        case 'recat_activity':
+            module_load_include('blocks.inc', 'recat_activity', 'recat_activity');
+            return _recat_activity_block_configure($delta);
+
+    }
+}
+
+function recat_activity_block_view($delta = '') {
+    switch ($delta) {
+        case 'recat_activity':
+            module_load_include('blocks.inc', 'recat_activity', 'recat_activity');
+            return array(
+                'content' => _recat_activity_block_view($delta),
+            );
+    }
+}
+
+
+function recat_activity_preprocess_page(&$variables) {
+    $term = menu_get_object('taxonomy_term', 2);
+    if (!$term) {
+        return;
+    }
+
+    if (!_recat_activity_is_taxonomy_page($term)) {
+        return;
+    }
+
+    $term->is_activity = true;
+    $variables['term'] = $term;
+}
+
+function _recat_activity_get_terms($parent_id = 0, $levels = 1) {
+    $terms = array();
+    $vocabulary = taxonomy_vocabulary_machine_name_load(RECAT_ACTIVITY_VOCABULARY_NAME);
+
+    if (!$vocabulary) {
+        return $terms;
+    }
+
+    $terms = taxonomy_get_tree($vocabulary->vid, $parent_id, $levels);
+    if (module_exists('i18n_taxonomy')) {
+        $terms = i18n_taxonomy_localize_terms($terms);
+    }
+
+    return $terms;
+}
+
+function _recat_activity_get_active_term() {
+    $current = menu_get_item();
+
+    if ($current['path'] === 'taxonomy/term/%') {
+        $tid = end($current['original_map']);
+        if (!$tid) {
+            return null;
+        }
+
+        return taxonomy_term_load($tid);
+    }
+
+    if ($current['path'] === 'node/%') {
+        $nid = end($current['original_map']);
+        if (!$nid) {
+            return null;
+        }
+
+        $node = node_load($nid);
+        if (!$node || $node->type !== 'activity') {
+            return null;
+        }
+
+        $node_wrapper = entity_metadata_wrapper('node', $node);
+
+        return $node_wrapper->field_activity->value();
+    }
+
+    return null;
+}
+
+function _recat_activity_get_nodes($tid, $limit = 10, $order_by = 'n.status', $order_direction = 'ASC') {
+    global $language;
+
+    $query = db_select('node', 'n')
+        ->extend('RecatCorePager');
+
+    $query
+        ->fields('n', array('nid'))
+        ->condition('n.status', 1)
+        ->condition('n.language', $language->language)
+        ->condition('n.type', 'activity')
+        ->orderBy($order_by, $order_direction)
+        ->addTag('node_access')
+        ->limit($limit);
+
+    $query->join('field_data_field_activity', 'activity', 'activity.entity_id = n.nid');
+    $query->condition('activity.entity_type', 'node')
+        ->condition('activity.field_activity_tid', $tid);
+
+    $nids = $query->execute()->fetchAllAssoc('nid');
+
+    return array($query->getCurrentPage(),  $query->getTotalPages(), $query->getTotalItemCount(), $nids);
+}
+
+function _recat_activity_get_nodes_count($tid) {
+    global $language;
+
+    $query = db_select('node', 'n');
+
+    $query
+        ->fields('n', array('nid'))
+        ->condition('n.status', 1)
+        ->condition('n.language', $language->language)
+        ->condition('n.type', 'activity')
+        ->addTag('node_access');
+
+    $query->join('field_data_field_activity', 'activity', 'activity.entity_id = n.nid');
+    $query->condition('activity.entity_type', 'node')
+        ->condition('activity.field_activity_tid', $tid);
+
+    return $query->execute()->rowCount();
+}
+
+function _recat_activity_get_url($type = 'ajax') {
+    $url = '';
+    switch ($type) {
+        case 'ajax':
+            $url = 'ajax/recat/activity';
+            break;
+    }
+
+    return $url;
+}
+
+function _recat_activity_get_settings($key = 'recat_activity') {
+    return variable_get($key, false);
+}
+
+function _recat_activity_is_taxonomy_page($term) {
+    return $term->vocabulary_machine_name === RECAT_ACTIVITY_VOCABULARY_NAME;
+}
