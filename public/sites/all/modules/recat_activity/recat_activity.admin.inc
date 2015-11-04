@@ -27,6 +27,15 @@ function recat_activity_admin($form, &$form_state) {
     $terms = taxonomy_get_tree($vocabulary->vid, 0, 1);
 
     foreach ($terms as $tid => $term) {
+        $form[$key]['view_all_cta_' . $term->tid] = array(
+            '#type' => 'markup',
+            '#prefix' => '<div class="form-item"><label>' . t('!name view all CTA button', array('!name' => $term->name)) . '</label>',
+            '#suffix' => '</div>',
+            '#markup' => _hs_resource_get('recat_activity.view.all.cta.' . $term->tid),
+        );
+    }
+
+    foreach ($terms as $tid => $term) {
         $form[$key]['name_' . $term->tid] = array(
             '#type' => 'markup',
             '#prefix' => '<div class="form-item"><label>' . t('!name name table heading', array('!name' => $term->name)) . '</label>',

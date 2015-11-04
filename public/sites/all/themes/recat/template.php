@@ -57,7 +57,7 @@ function recat_preprocess_block(&$variables) {
             break;
         case 'recatNewsTags':
         case 'recatNewsCategories':
-        case 'recatActivity':
+        case 'recatActivitySidebar':
             $variables['theme_hook_suggestions'][] = 'block__sidebar_panel';
             $variables['title_attributes_array']['class'] = array('title');
         case 'recatSubmenu':
@@ -204,7 +204,11 @@ function _recat_preprocess_page_activity(&$variables) {
         return;
     }
 
-    $blocks = array(block_load('recat_activity', 'recat_activity'));
+    if (isset($variables['term']->is_map_page)) {
+        return;
+    }
+
+    $blocks = array(block_load('recat_activity', 'recat_activity_sidebar'));
     $variables['page']['sidebar'] = array_merge(_block_get_renderable_array(
         _block_render_blocks($blocks)
     ), $variables['page']['sidebar']);

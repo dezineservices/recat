@@ -6,3 +6,4 @@ version = 7.x-0.1
 
 dependencies[] = hs_resource
 dependencies[] = visitors
+dependencies[] = recat_activity

@@ -27,6 +27,20 @@ function recat_activity_menu() {
 
 function recat_activity_theme() {
     return array(
+        'recat_activity_landing' => array(
+            'template' => 'templates/landing',
+            'variables' => array(
+                'terms' => array(),
+                'blocks' => array(),
+            ),
+        ),
+        'recat_activity_map' => array(
+            'template' => 'templates/map',
+            'variables' => array(
+                'title' => null,
+                'content' => null,
+            ),
+        ),
         'recat_activity_overview' => array(
             'template' => 'templates/overview',
             'variables' => array(
@@ -50,9 +64,48 @@ function recat_activity_theme() {
     );
 }
 
+function recat_activity_library() {
+    $path = drupal_get_path('module', 'recat_activity');
+    $libraries['recat_activity_map'] = array(
+        'title' => 'Recat Activity Map',
+        'version' => '1',
+        'js' => array(
+            $path . '/js/jquery-jvectormap.min.js' => array('type' => 'file'),
+            $path . '/js/jquery-jvectormap-europe-merc.js' => array('type' => 'file'),
+            $path . '/js/recat_activity_map.js' => array('type' => 'file'),
+        ),
+    );
+
+    return $libraries;
+}
+
+function recat_activity_page_alter(&$page) {
+    $term = _recat_activity_get_active_term();
+    if (!$term
+        || !_recat_activity_is_taxonomy_page($term)
+        || !isset($term->is_map_page)) {
+        return;
+    }
+
+    if (!isset($page['content'])
+        || !isset($page['content_bottom'])) {
+        return;
+    }
+
+    $page['content_bottom'] = array_merge($page['content'], $page['content_bottom']);
+    $page['content']['system_main'] = array();
+}
+
 function recat_activity_block_info() {
     $blocks = array();
     $blocks['recat_activity'] = array(
+        'info' => t('Activities landing'),
+        'cache' => DRUPAL_CACHE_PER_PAGE,
+        'visibility' => BLOCK_VISIBILITY_NOTLISTED,
+        'pages' => '',
+    );
+
+    $blocks['recat_activity_sidebar'] = array(
         'info' => t('Activities sidebar'),
         'cache' => DRUPAL_CACHE_PER_PAGE,
         'visibility' => BLOCK_VISIBILITY_NOTLISTED,
@@ -65,6 +118,7 @@ function recat_activity_block_info() {
 function recat_activity_block_configure($delta = '') {
     switch ($delta) {
         case 'recat_activity':
+        case 'recat_activity_sidebar':
             module_load_include('blocks.inc', 'recat_activity', 'recat_activity');
             return _recat_activity_block_configure($delta);
 
@@ -76,7 +130,13 @@ function recat_activity_block_view($delta = '') {
         case 'recat_activity':
             module_load_include('blocks.inc', 'recat_activity', 'recat_activity');
             return array(
+                'title' => '<none>',
                 'content' => _recat_activity_block_view($delta),
+            );
+        case 'recat_activity_sidebar':
+            module_load_include('blocks.inc', 'recat_activity', 'recat_activity');
+            return array(
+                'content' => _recat_activity_block_sidebar_view($delta),
             );
     }
 }
@@ -136,7 +196,6 @@ function _recat_activity_get_active_term() {
         }
 
         $node_wrapper = entity_metadata_wrapper('node', $node);
-
         return $node_wrapper->field_activity->value();
     }
 
@@ -167,7 +226,7 @@ function _recat_activity_get_nodes($tid, $limit = 10, $order_by = 'n.status', $o
     return array($query->getCurrentPage(),  $query->getTotalPages(), $query->getTotalItemCount(), $nids);
 }
 
-function _recat_activity_get_nodes_count($tid) {
+function _recat_activity_get_nodes_count($tids) {
     global $language;
 
     $query = db_select('node', 'n');
@@ -181,7 +240,7 @@ function _recat_activity_get_nodes_count($tid) {
 
     $query->join('field_data_field_activity', 'activity', 'activity.entity_id = n.nid');
     $query->condition('activity.entity_type', 'node')
-        ->condition('activity.field_activity_tid', $tid);
+        ->condition('activity.field_activity_tid', $tids, 'IN');
 
     return $query->execute()->rowCount();
 }

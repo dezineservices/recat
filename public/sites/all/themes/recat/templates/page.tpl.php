@@ -51,7 +51,7 @@
 </div>
 <?php endif; ?>
 
-
+<?php if ($has_main_content || isset($block_reference)): ?>
 <section id="main" role="main"<?php print isset($is_colored) ? ' class="colored"' : ''; ?>>
     <?php if ($has_main_content): ?>
     <div class="row">
@@ -67,6 +67,7 @@
         <?php print drupal_render($block_reference); ?>
     <?php endif; ?>
 </section>
+<?php endif; ?>
 
 <?php print render($page['content_bottom']); ?>
 

@@ -20,11 +20,37 @@ function _recat_activity_block_configure($key) {
 }
 
 function _recat_activity_block_view() {
-    $vocabulary = taxonomy_vocabulary_machine_name_load(RECAT_ACTIVITY_VOCABULARY_NAME);
-    if (!$vocabulary) {
+    $terms = _recat_activity_get_terms();
+    if (!$terms) {
         return;
     }
 
+    if (module_exists('i18n_taxonomy')) {
+        $terms = i18n_taxonomy_localize_terms($terms);
+    }
+
+    $build = array();
+    foreach ($terms as $term) {
+        $build[] = theme('recat_activity_overview', array(
+            'title' => $term->name,
+            'content' => check_markup($term->description, $term->format),
+        ));
+    }
+
+    $block = block_load('recat_activity', 'recat_activity_sidebar');
+
+    return array(
+        '#theme' => 'recat_activity_landing',
+        '#terms' => $build,
+        '#blocks' => _block_get_renderable_array(
+            _block_render_blocks(array($block))
+        ),
+    );
+
+    return 'test';
+}
+
+function _recat_activity_block_sidebar_view() {
     $terms = _recat_activity_get_terms();
     if (!$terms) {
         return;
@@ -49,7 +75,7 @@ function _recat_activity_block_view() {
             $term->css_list_classes[] = 'active-trail';
             $term->css_list_classes[] = 'expanded';
 
-            $term->terms = _recat_activity_block_assign_count(
+            $term->terms = _recat_activity_block_sidebar_assign_count(
                 _recat_activity_get_terms($term->tid), _recat_activity_get_active_term());
         }
     }
@@ -60,7 +86,7 @@ function _recat_activity_block_view() {
     );
 }
 
-function _recat_activity_block_assign_count($terms, $active_term) {
+function _recat_activity_block_sidebar_assign_count($terms, $active_term) {
     foreach ($terms as $term) {
         $term->css_classes = array();
 
@@ -68,7 +94,7 @@ function _recat_activity_block_assign_count($terms, $active_term) {
             $term->css_classes[] = 'active';
         }
 
-        $term->activities_count = _recat_activity_get_nodes_count($term->tid);
+        $term->activities_count = _recat_activity_get_nodes_count(array($term->tid));
     }
 
     return $terms;
