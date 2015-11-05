@@ -111,6 +111,10 @@ function _recat_preprocess_page_title(&$variables) {
         return;
     }
 
+    if (isset($variables['node'])) {
+        $variables['node']->has_heading_title = true;
+    }
+
     $variables['heading_title'] = $active_trail[0]['title'];
 }
 
