@@ -40,7 +40,7 @@
                             fill: '#cad3df',
                             'fill-opacity': 1,
                             stroke: '#ffffff',
-                            'stroke-width': 1.5
+                            'stroke-width': 1
                         },
                         hover: {
                             'fill-opacity': 1,
@@ -51,6 +51,8 @@
                         }
                     }
                 });
+
+            map.setFocus({ scale: 1.8, x: 0.8, y: 0.6 });
 
             for (var i = 0, len = settings.recatActivityMap.terms.length; i < len; i += 1) {
                 var latLng = map.getRegionCenter(settings.recatActivityMap.terms[i].countryCode),
