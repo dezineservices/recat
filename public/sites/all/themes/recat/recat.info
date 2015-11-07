@@ -20,4 +20,5 @@ stylesheets[all][] = design/css/libraries.css
 stylesheets[all][] = design/css/default.css
 stylesheets[print][] = design/css/print.css
 
+scripts[] = design/scripts/vendor/jquery.uniform.min.js
 scripts[] = design/scripts/functions.js

@@ -79,3 +79,26 @@ var RecatEqualHeight = (function (el, $) {
         resize: resize
     };
 }) (document.querySelectorAll('[data-equalheight]'), jQuery);
+
+var RecatForms = (function (el, $) {
+    var uniform = function (el) {
+        $(el).uniform();
+    };
+
+    if (el) {
+        var i = 0,
+            len = el.length;
+
+        for (; i < len; i += 1) {
+            if (el[i].className.indexOf('js-ratingstars') !== -1) {
+                continue;
+            }
+
+            uniform(el[i]);
+        }
+    }
+
+    return {
+        uniform: uniform
+    };
+}) (document.querySelectorAll('input[type="radio"], input[type="checkbox"]'), jQuery);

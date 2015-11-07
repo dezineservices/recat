@@ -68,6 +68,7 @@ input {
 
 .label-winput {
   padding-left: 35px;
+  position: relative;
 }
 
 select {
@@ -161,8 +162,8 @@ textarea {
   }
 }
 
-.form-radios {
-  margin: 10px 0;
+.form-radios, .form-checkboxes {
+  margin: 10px 0 20px;
   overflow: hidden;
 
   label {
@@ -179,6 +180,18 @@ textarea {
   font-size: 15px;
   line-height: 1.5;
   display: block;
+  position: relative;
+}
+
+.form-type-checkbox {
+  float: left;
+  padding: 2px 0 1px 35px;
+  margin: 0 25px 0 0;
+  font-weight: 100;
+  font-size: 15px;
+  line-height: 1.5;
+  display: block;
+  position: relative;
 }
 
 .form-radios-ratingstars {
@@ -190,7 +203,7 @@ textarea {
   .form-radios-ratingstar {
     display: block;
     float: none;
-    margin: 5px 0 15px;
+    margin: 5px 0 0;
     padding: 0;
   }
 }
