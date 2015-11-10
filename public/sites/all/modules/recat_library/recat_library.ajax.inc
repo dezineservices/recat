@@ -42,7 +42,6 @@ function recat_library_ajax() {
                 $tags[] = $tag->name;
             }
 
-            $url = '';
             if ($node_wrapper->field_private->value() === false) {
                 $url = url(_recat_library_get_url('download', $field_file['hash']), array(
                     'absolute' => true,

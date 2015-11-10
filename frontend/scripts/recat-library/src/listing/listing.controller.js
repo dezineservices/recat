@@ -27,6 +27,10 @@
         vm.pageChange = pageChange;
         vm.filterChange = filterChange;
         vm.downloadFile = downloadFile;
+        vm.requestFile = requestFile;
+
+        vm.isFirstDownloadRequest = isFirstDownloadRequest();
+        vm.firstDownloadRequestUrl = Drupal.settings.recatLibrary.overlayUrl;
 
         if (Drupal.settings.recatLibrary.tid) {
             currentTags.push(Drupal.settings.recatLibrary.tid);
@@ -62,6 +66,18 @@
         }
 
         function downloadFile (file) {
+            if (isFirstDownloadRequest()) {
+                setFirstDownloadRequest();
+
+                vm.isFirstDownloadRequest = false;
+                Drupal.behaviors.recatWfOverlay.openOverlayer(
+                    Drupal.settings.recatLibrary.overlayUrl);
+
+                handleOverlay();
+
+                return;
+            }
+
             if (!file.url) {
                 return;
             }
@@ -72,6 +88,15 @@
             }
 
             Drupal.behaviors.recatWfOverlay.openOverlayer(file.url);
+        }
+
+        function requestFile () {
+            handleOverlay(true);
+
+            setFirstDownloadRequest();
+            vm.isFirstDownloadRequest = false;
+
+            setTimeout(handleOverlay, 100);
         }
 
         function loadData () {
@@ -169,6 +194,28 @@
 
         function doesOverlayExists () {
             return Drupal && Drupal.behaviors && Drupal.behaviors.recatWfOverlay;
+        }
+
+        function isFirstDownloadRequest () {
+            if (!doesOverlayExists()) {
+                return false;
+            }
+
+            return !getCookie(Drupal.settings.recatLibrary.cookieName);
+        }
+
+        function setFirstDownloadRequest () {
+            var today = new Date();
+            today.setFullYear(today.getFullYear() + 10);
+
+            document.cookie
+                = Drupal.settings.recatLibrary.cookieName + '=' + new Date().getTime() + '; expires=' + today.toGMTString() + '; path=/';
+        }
+
+        function getCookie (name) {
+            var value = '; ' + document.cookie;
+            var parts = value.split('; ' + name + '=');
+            if (parts.length === 2) return parts.pop().split(';').shift();
         }
     }
 })();

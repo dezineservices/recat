@@ -2,7 +2,7 @@
     Drupal.behaviors.recatWfOverlay = {
         attach: function (context) {
             this.detach(context);
-
+            
             $(this.ELEMENT_SELECTOR, context).bind(this.CLICK_EVENT, this.onClick);
             $(this.ELEMENT_CLOSE_SELECTOR, context).bind(this.CLICK_EVENT, this.onCloseClick);
 

@@ -20,7 +20,10 @@
                 <tbody data-ng-if="listing.nodes.length">
                     <tr data-ng-repeat="node in listing.nodes track by node.nid" data-ng-click="listing.downloadFile(node)">
                         <td class="icon-column"><i class="sprite icon-lock" data-ng-class="{ unlocked: !node.private, locked: node.private }"></i></td>
-                        <td><a data-ng-href="{{ node.url }}" data-ng-class="{ 'js-recatWfOverlay': node.private }">{{ node.title }}</a></td>
+                        <td>
+                            <a data-ng-if="!listing.isFirstDownloadRequest" data-ng-href="{{ node.url }}" data-ng-class="{ 'js-recatWfOverlay': node.private }">{{ node.title }}</a>
+                            <a class="js-recatWfOverlay" data-ng-if="listing.isFirstDownloadRequest" data-ng-href="{{ listing.firstDownloadRequestUrl }}" data-ng-click="listing.requestFile()">{{ node.title }}</a>
+                        </td>
                         <td>{{ node.tags }}</td>
                         <td>{{ node.date }}</td>
                     </tr>

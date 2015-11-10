@@ -42,12 +42,21 @@ function _recat_library_block_simple_view() {
 }
 
 function _recat_library_block_get_build() {
+    $settings = _recat_library_get_settings();
+    $overlay_url = null;
+
+    if (isset($settings['first_visit_overlay'])) {
+        $overlay_url = _recat_wf_overlay_get_url($settings['first_visit_overlay']);
+    }
+
     return array(
         '#attached' => array(
             'js' => array(
                 array(
                     'data' => array('recatLibrary' => array(
                         'serviceUrl' => url(_recat_library_get_url(), array('absolute' => true)),
+                        'overlayUrl' => url($overlay_url, array('absolute' => true)),
+                        'cookieName' => RECAT_LIBRARY_COOKIE_NAME
                     )),
                     'type' => 'setting',
                 ), array(

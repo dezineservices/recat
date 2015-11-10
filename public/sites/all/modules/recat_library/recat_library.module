@@ -1,6 +1,7 @@
 <?php
 
 define('RECAT_LIBRARY_VOCABULARY_NAME', 'tags');
+define('RECAT_LIBRARY_COOKIE_NAME', 'recatLibraryFirstDownload');
 
 function recat_library_menu() {
     $items = array();

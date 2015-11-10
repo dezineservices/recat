@@ -14,13 +14,27 @@ function recat_library_admin($form, &$form_state) {
         $webforms[$nid] = $webform->title;
     }
 
+    $nodes = array();
+    foreach (_recat_library_admin_get_nodes() as $nid => $node) {
+        $nodes[$nid] = $node->title;
+    }
+
     $form[$key]['webform'] = array(
         '#type' => 'select',
-        '#title' => t('Webform'),
+        '#title' => t('Webform private file'),
         '#description' => t('Webform shown for private file request'),
         '#required' => true,
         '#options' => $webforms,
         '#default_value' => $settings ? $settings['webform'] : '',
+    );
+
+    $form[$key]['first_visit_overlay'] = array(
+        '#type' => 'select',
+        '#title' => t('First visit overlay'),
+        '#description' => t('Overlay shown when visitor requests his first download'),
+        '#required' => true,
+        '#options' => $nodes,
+        '#default_value' => $settings ? $settings['first_visit_overlay'] : '',
     );
 
     $items_per_page = array();
@@ -88,7 +102,7 @@ function recat_library_admin($form, &$form_state) {
     return system_settings_form($form);
 }
 
-function _recat_library_admin_get_webforms() {
+function _recat_library_admin_get_nodes($type = 'page') {
     global $language;
 
     $query = db_select('node', 'n');
@@ -97,9 +111,13 @@ function _recat_library_admin_get_webforms() {
         ->fields('n', array('nid', 'title'))
         ->condition('status', 1)
         ->condition('language', $language->language)
-        ->condition('type', 'webform')
+        ->condition('type', $type)
         ->orderBy('title')
         ->addTag('node_access');
 
     return $query->execute()->fetchAllAssoc('nid');
+}
+
+function _recat_library_admin_get_webforms() {
+    return _recat_library_admin_get_nodes('webform');
 }
