@@ -157,6 +157,23 @@ function recat_news_block_view($delta = '') {
 
 function recat_news_image_default_styles() {
     $styles = array();
+    $styles['recat_news'] = array(
+        'label' => 'News (610x408)',
+        'name' => 'recat_news',
+        'storage' => IMAGE_STORAGE_NORMAL,
+        'effects' => array(
+            array(
+                'name' => 'image_scale_and_crop',
+                'data' => array(
+                    'width' => 610,
+                    'height' => 408,
+                    'upscale' => 1,
+                ),
+                'weight' => 0,
+            ),
+        ),
+    );
+
     $styles['recat_news_teaser'] = array(
         'label' => 'News teaser (370x250)',
         'name' => 'recat_news_teaser',
@@ -268,9 +285,8 @@ function _recat_news_get_count_by_term($term) {
 function _recat_news_get_teaser_view($node, $image_style = 'thumbnail', $date_format = 'medium', $max_chars = 150) {
     $node_wrapper = entity_metadata_wrapper('node', $node);
 
-    $body = $node_wrapper->body->value();
+    $teaser = $node_wrapper->field_teaser->value();
     $image = $node_wrapper->field_image->value();
-    $content = filter_xss($body['summary'] ? $body['summary'] : $body['value'], array());
 
     return array(
         '#theme' => 'recat_news_teaser',
@@ -287,7 +303,7 @@ function _recat_news_get_teaser_view($node, $image_style = 'thumbnail', $date_fo
         )),
         '#post_date' => format_date($node->created, $date_format),
         '#title' => $node_wrapper->title->value(),
-        '#content' => truncate_utf8($content, $max_chars, true, true),
+        '#content' => truncate_utf8($teaser, $max_chars, true, true),
         '#cta' => _hs_resource_get('recat_news.teaser.read_more', 'plain', null, false),
         '#url' => node_uri($node),
     );

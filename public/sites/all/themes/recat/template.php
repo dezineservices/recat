@@ -35,6 +35,10 @@ function recat_preprocess_page(&$variables) {
 
 function recat_preprocess_node(&$variables) {
     if ($variables['type'] === 'news') {
+        if (isset($variables['node']->has_heading_title)) {
+            unset($variables['node']->has_heading_title);
+        }
+
         $variables['classes_array'][] = 'panel panel-node';
         $variables['title_prefix'][] = array(
             '#markup' => sprintf('<h1 class="h3 node-title">%s</h1>', $variables['title']),
