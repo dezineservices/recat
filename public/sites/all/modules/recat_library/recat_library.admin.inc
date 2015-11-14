@@ -14,11 +14,6 @@ function recat_library_admin($form, &$form_state) {
         $webforms[$nid] = $webform->title;
     }
 
-    $nodes = array();
-    foreach (_recat_library_admin_get_nodes() as $nid => $node) {
-        $nodes[$nid] = $node->title;
-    }
-
     $form[$key]['webform'] = array(
         '#type' => 'select',
         '#title' => t('Webform private file'),
@@ -33,7 +28,7 @@ function recat_library_admin($form, &$form_state) {
         '#title' => t('First visit overlay'),
         '#description' => t('Overlay shown when visitor requests his first download'),
         '#required' => true,
-        '#options' => $nodes,
+        '#options' => $webforms,
         '#default_value' => $settings ? $settings['first_visit_overlay'] : '',
     );
 
