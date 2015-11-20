@@ -13,3 +13,8 @@ section.block,
   background: $neutralLightColor;
   padding: 70px 0 0;
 }
+
+section.block {
+  position: relative;
+  z-index: 2;
+}
