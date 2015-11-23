@@ -60,7 +60,7 @@ function _recat_feedback_block_view($key) {
 
     return array(
         '#theme' => 'recat_feedback',
-        '#content' => _hs_resource_get($resource_key . '.content', 'markup'),
+        '#content' => _hs_resource_get($resource_key . '.content', 'markup', null, false),
         '#cta' => _hs_resource_get($resource_key . '.cta_content', 'plain', null, false),
         '#url' => url(sprintf('node/%d', $node->nid)),
         '#url_overlay' => url(_recat_wf_overlay_get_url($node->nid)),

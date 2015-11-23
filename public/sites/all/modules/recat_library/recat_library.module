@@ -118,19 +118,30 @@ function recat_library_shortcode_block_process($attrs) {
         return;
     }
 
-    $tag = taxonomy_get_term_by_name($attrs['tag']);
-    if (!$tag) {
+    $tags = explode(',', $attrs['tag']);
+    if (!$tags) {
         return;
     }
 
-    $tag = array_shift($tag);
-    $vocabulary = taxonomy_vocabulary_load($tag->vid);
+    $tids = array();
+    foreach ($tags as $tag) {
+        $term = taxonomy_get_term_by_name($tag);
+        if (!$term) {
+            continue;
+        }
 
-    if (!$vocabulary || $vocabulary->machine_name !== RECAT_LIBRARY_VOCABULARY_NAME) {
-        return;
+        $term = array_shift($term);
+        $vocabulary = taxonomy_vocabulary_load($term->vid);
+
+        if (!$vocabulary
+            || $vocabulary->machine_name !== RECAT_LIBRARY_VOCABULARY_NAME) {
+            continue;
+        }
+
+        $tids[] = $term->tid;
     }
 
-    return sprintf('[recat_library tid="%d" /]', $tag->tid);
+    return sprintf('[recat_library tid="%s" /]', implode(',', $tids));
 }
 
 function recat_library_shortcode_block_tips() {
@@ -159,8 +170,8 @@ function recat_library_field_attach_view_alter(&$output, $context) {
                     $attributes = array();
                     preg_match_all('/(tid)\=[\"](.*?)[\"]/', $matches[2], $attributes);
 
-                    $tid = $attributes[2][array_search('tid', $attributes[1])];
-                    $term = taxonomy_term_load($tid);
+                    $tids = explode(',', $attributes[2][array_search('tid', $attributes[1])]);
+                    $terms = taxonomy_term_load_multiple($tids);
 
                     $block = block_load('recat_library', 'recat_library_simple');
                     $block_renderable = _block_get_renderable_array(
@@ -169,7 +180,7 @@ function recat_library_field_attach_view_alter(&$output, $context) {
 
                     $block_renderable['recat_library_recat_library_simple']['#attached']['js'][] = array(
                         'data' => array('recatLibrary' => array(
-                            'tid' => $term->tid,
+                            'tid' => implode(',', array_keys($terms)),
                         )),
                         'type' => 'setting',
                     );

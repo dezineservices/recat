@@ -2,7 +2,7 @@ CKEDITOR.on('instanceReady', function (ev) {
     ev.editor.filter.addTransformations([['img{width,height}: sizeToStyle', 'img[width,height]: sizeToAttribute']]);
 });
 
-CKEDITOR.config.extraAllowedContent = 'dl dt dd';
+CKEDITOR.config.extraAllowedContent = 'dl dt dd a[data-tooltip]';
 
 CKEDITOR.editorConfig = function (config) {
     config.stylesSet = [

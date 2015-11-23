@@ -1,3 +1,5 @@
+jQuery(document).foundation();
+
 var RecatEqualHeight = (function (el, $) {
     var resizeTimeout = null;
 

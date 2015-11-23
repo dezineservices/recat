@@ -148,3 +148,15 @@ div.error,
     background-position: -106px top;
   }
 }
+
+.has-tip {
+  font-weight: $baseFontWeight;
+  color: $linkColor;
+  border-color: $linkColor;
+
+  &:hover,
+  &:focus {
+    color: $linkColorHover;
+    border-color: $linkColorHover;
+  }
+}
