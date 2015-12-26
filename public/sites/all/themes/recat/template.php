@@ -3,6 +3,15 @@
 function recat_preprocess_html(&$variables) {
     _recat_preprocess_html_fonts();
 
+    drupal_add_html_head(array(
+        '#type' => 'html_tag',
+        '#tag' => 'meta',
+        '#attributes' => array(
+            'name' =>  'robots',
+            'content' => 'noindex, nofollow',
+        )
+    ), 'meta_noindex_nofollow');
+
 }
 
 function recat_preprocess_page(&$variables) {
