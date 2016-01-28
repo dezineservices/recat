@@ -1,58 +1,92 @@
 jQuery(document).foundation();
 
 var RecatEqualHeight = (function (el, $) {
-    var resizeTimeout = null;
+    'use strict';
+
+    var resizeTimeout = null,
+        currentWindowWidth = 0,
+        elementsCache = {};
 
     var resizeByContext = function (el) {
         var i = 0,
             len = el.length;
 
         for (; i < len; i += 1) {
-            resize(el[i].querySelectorAll('[data-equalheight-part]'));
+            resize(getArray(el[i].querySelectorAll('[data-equalheight-part]')).reverse());
         }
     };
 
     var resize = function (el) {
-        var elementsCache = {},
-            elementsCacheMapper = [],
-            i = 0,
+        var i = 0,
             len = el.length,
             offsetTop = 0,
             height = 0;
 
         for (; i < len; i += 1) {
-            el[i].style.height = null;
+            if (el[i].equalHeightReset) {
+                el[i].style.height = null;
+            }
 
-            offsetTop = el[i].offsetTop;
-            height = el[i].clientHeight;
+            height = $(el[i]).height();
+            offsetTop = $(el[i]).offset().top;
 
             if (!elementsCache[offsetTop]) {
                 elementsCache[offsetTop] = {
                     el: [],
                     maxHeight: 0
-                };
-
-                elementsCacheMapper.push(offsetTop);
+                }
             }
 
             elementsCache[offsetTop].el.push(el[i]);
             if (elementsCache[offsetTop].maxHeight < height) {
                 elementsCache[offsetTop].maxHeight = height;
             }
-        }
 
-        i = 0;
-        len = elementsCacheMapper.length;
+            if (elementsCache[offsetTop].el.length > 1) {
+                el.splice(i, 1);
+
+                equalize(elementsCache[offsetTop]);
+                resize(el);
+
+                break;
+            }
+        }
+    };
+
+    var equalize = function (row) {
+        var i = 0,
+            len = row.el.length;
+
+        if (row.maxHeight === 0) {
+            return;
+        }
 
         for (; i < len; i += 1) {
-            if (elementsCache[elementsCacheMapper[i]].maxHeight === 0) {
-                continue;
-            }
+            row.el[i].equalHeightReset = false;
+            $(row.el[i]).height(row.maxHeight);
+        }
+    };
 
-            $(elementsCache[elementsCacheMapper[i]].el).height(
-                elementsCache[elementsCacheMapper[i]].maxHeight);
+    var getArray = function (el) {
+        var array = [],
+            i = 0,
+            len = el.length;
+
+        for (; i < len; i += 1) {
+            el[i].equalHeightReset = true;
+            array.push(el[i]);
         }
 
+        return array;
+    };
+
+    var getWindowWidth = function () {
+        var w = window,
+            d = document,
+            e = d.documentElement,
+            g = d.getElementsByTagName('body')[0];
+
+        return w.innerWidth || e.clientWidth || g.clientWidth;
     };
 
     var onLoad = function () {
@@ -60,12 +94,22 @@ var RecatEqualHeight = (function (el, $) {
     };
 
     var onResize = function () {
+        var windowWidth = getWindowWidth();
+        if (currentWindowWidth === windowWidth) {
+            return;
+        }
+
+        elementsCache = {};
+        currentWindowWidth = windowWidth;
+
         resizeByContext(el);
     };
 
     if (el) {
         resizeByContext(el);
     }
+
+    currentWindowWidth = getWindowWidth();
 
     $(window).load(onLoad);
     $(window).resize(function () {
@@ -78,7 +122,8 @@ var RecatEqualHeight = (function (el, $) {
 
     return {
         resizeByContext: resizeByContext,
-        resize: resize
+        resize: resize,
+        forceResize: onResize
     };
 }) (document.querySelectorAll('[data-equalheight]'), jQuery);
 

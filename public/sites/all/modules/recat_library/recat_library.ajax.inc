@@ -39,6 +39,10 @@ function recat_library_ajax() {
 
             $tags = array();
             foreach ($field_tags as $tag) {
+                if (!$tag) {
+                    continue;
+                }
+
                 $tags[] = $tag->name;
             }
 
