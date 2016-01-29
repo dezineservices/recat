@@ -1,83 +1,105 @@
 jQuery(document).foundation();
 
-var RecatEqualHeight = (function (el, $) {
+var RecatEqualHeight = (function (el, $, PART_SELECTOR) {
     'use strict';
 
-    var resizeTimeout = null,
-        currentWindowWidth = 0,
-        elementsCache = {};
+    var elementsCache = {},
+        resizeTimeout = null,
+        currentWindowWidth = 0;
 
-    var resizeByContext = function (el) {
-        var i = 0,
-            len = el.length;
-
-        for (; i < len; i += 1) {
-            resize(getArray(el[i].querySelectorAll('[data-equalheight-part]')).reverse());
-        }
-    };
-
-    var resize = function (el) {
+    var processParts = function (el) {
         var i = 0,
             len = el.length,
-            offsetTop = 0,
-            height = 0;
+            offsetTop = 0;
 
         for (; i < len; i += 1) {
-            if (el[i].equalHeightReset) {
-                el[i].style.height = null;
-            }
-
-            height = $(el[i]).height();
             offsetTop = $(el[i]).offset().top;
 
             if (!elementsCache[offsetTop]) {
                 elementsCache[offsetTop] = {
                     el: [],
-                    maxHeight: 0
-                }
+                    count: 0,
+                    resized: 0
+                };
             }
 
-            elementsCache[offsetTop].el.push(el[i]);
-            if (elementsCache[offsetTop].maxHeight < height) {
-                elementsCache[offsetTop].maxHeight = height;
+            if (!el[i]._equalized
+                || el[i]._offsetTop !== offsetTop) {
+                elementsCache[offsetTop].el.push(el[i]);
+                elementsCache[offsetTop].count += 1;
             }
 
-            if (elementsCache[offsetTop].el.length > 1) {
-                el.splice(i, 1);
+            el[i]._equalized = true;
+            el[i]._offsetTop = offsetTop;
 
-                equalize(elementsCache[offsetTop]);
-                resize(el);
+            if (elementsCache[offsetTop].count > 1
+                && elementsCache[offsetTop].resized !== elementsCache[offsetTop].count) {
+                elementsCache[offsetTop].resized = elementsCache[offsetTop].el.length;
+
+                processRow(elementsCache[offsetTop].el);
+                processParts(el);
 
                 break;
             }
         }
     };
 
-    var equalize = function (row) {
-        var i = 0,
-            len = row.el.length;
-
-        if (row.maxHeight === 0) {
+    var processRow = function (parts) {
+        if (parts.length < 2) {
             return;
         }
 
-        for (; i < len; i += 1) {
-            row.el[i].equalHeightReset = false;
-            $(row.el[i]).height(row.maxHeight);
-        }
+        equalHeight(parts);
     };
 
-    var getArray = function (el) {
-        var array = [],
-            i = 0,
-            len = el.length;
+    var equalHeight = function (el) {
+        var i = 0,
+            len = el.length,
+            maxHeight = 0;
 
         for (; i < len; i += 1) {
-            el[i].equalHeightReset = true;
-            array.push(el[i]);
+            maxHeight = Math.max(maxHeight, getHeight($(el[i])));
         }
 
-        return array;
+        if (maxHeight === 0) {
+            return;
+        }
+
+        $(el).height(maxHeight);
+    };
+
+    var getHeight = function (el) {
+        return el.height();
+    };
+
+    var resetHeight = function (el) {
+        el.style.height = null;
+    };
+
+    var equalizer = function (parts) {
+        if (!parts.length) {
+            return;
+        }
+
+        var i = 0,
+            len = parts.length;
+
+        for (; i < len; i += 1) {
+            parts[i]._equalized = false;
+            resetHeight(parts[i]);
+        }
+
+        processParts(parts);
+        elementsCache = {};
+    };
+
+    var resizeByContext = function (context) {
+        var i = 0,
+            len = context.length;
+
+        for (; i < len; i += 1) {
+            equalizer(context[i].querySelectorAll(PART_SELECTOR));
+        }
     };
 
     var getWindowWidth = function () {
@@ -105,7 +127,7 @@ var RecatEqualHeight = (function (el, $) {
         resizeByContext(el);
     };
 
-    if (el) {
+    if (el.length) {
         resizeByContext(el);
     }
 
@@ -122,10 +144,9 @@ var RecatEqualHeight = (function (el, $) {
 
     return {
         resizeByContext: resizeByContext,
-        resize: resize,
         forceResize: onResize
     };
-}) (document.querySelectorAll('[data-equalheight]'), jQuery);
+}) (document.querySelectorAll('[data-equalheight]'), jQuery, '[data-equalheight-part]');
 
 var RecatForms = (function (el, $) {
     var uniform = function (el) {
