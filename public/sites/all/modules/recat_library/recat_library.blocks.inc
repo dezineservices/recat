@@ -41,7 +41,7 @@ function _recat_library_block_simple_view() {
     return _recat_library_block_get_build();
 }
 
-function _recat_library_block_get_build() {
+function _recat_library_block_get_build($instance_id = '') {
     $settings = _recat_library_get_settings();
     $overlay_url = null;
 
@@ -50,6 +50,7 @@ function _recat_library_block_get_build() {
     }
 
     return array(
+        '#instance_id' => $instance_id,
         '#attached' => array(
             'js' => array(
                 array(
@@ -61,6 +62,9 @@ function _recat_library_block_get_build() {
                     'type' => 'setting',
                 ), array(
                     'data' => drupal_get_path('module', 'recat_library') . '/js/recat_library.min.js',
+                    'type' => 'file',
+                ), array(
+                    'data' => drupal_get_path('module', 'recat_library') . '/js/recat_library.js',
                     'type' => 'file',
                 )
             ),

@@ -9,10 +9,23 @@ function recat_library_ajax() {
     $settings = _recat_library_get_settings();
     
     try {
+        $condition = filter_input(INPUT_GET, 'condition', FILTER_SANITIZE_URL);
         $tids = filter_input(INPUT_GET, 'tid', FILTER_SANITIZE_URL);
 
+        if (!$condition) {
+            $condition = $settings['tags_query'];
+        }
+
+        switch (strtoupper($condition)) {
+            case 'OR':
+                $condition = 'OR';
+                break;
+            default:
+                $condition = 'AND';
+        }
+
         list($current_page, $total_pages, $total, $nids)
-            = _recat_library_get_nodes($tids ? explode(',', $tids) : array(), $settings['tags_query'], $settings['items_per_page']);
+            = _recat_library_get_nodes($tids ? explode(',', $tids) : array(), $condition, $settings['items_per_page']);
 
         if (empty($nids)) {
             throw new Exception('recat_library.no_results_message', 404);

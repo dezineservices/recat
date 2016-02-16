@@ -12,12 +12,12 @@
             getFiles: getFiles
         };
 
-        function getFiles (page, tags) {
-            return loadData(page, tags);
+        function getFiles (page, condition, tags) {
+            return loadData(page, condition, tags);
         }
 
-        function loadData (page, tags) {
-            var params = {};
+        function loadData (page, condition, tags) {
+            var params = { condition: condition };
             if (page) {
                 params.page = parseInt(page, 10);
             }

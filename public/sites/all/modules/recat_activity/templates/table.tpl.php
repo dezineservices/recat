@@ -3,7 +3,6 @@
         <thead>
         <tr>
             <th class="fixed-size" data-ng-non-bindable><?php print _hs_resource_get('recat_activity.table.status'); ?></th>
-            <th data-ng-non-bindable><?php print _hs_resource_get('recat_activity.table.continent'); ?></th>
             <th data-ng-non-bindable><?php print _hs_resource_get('recat_activity.table.country'); ?></th>
             <th data-ng-non-bindable><?php print _hs_resource_get('recat_activity.table.name.' . $term->tid); ?></th>
         </tr>
@@ -11,14 +10,13 @@
         <tbody data-ng-if="listing.nodes.length">
         <tr data-ng-repeat="node in listing.nodes track by node.nid" data-ng-click="listing.goToPage(node)">
             <td><span class="state {{ node.statusClass }}">{{ node.status }}</span></td>
-            <td>{{ node.continent }}</td>
             <td>{{ node.country }}</td>
             <td class="font-regular"><a data-ng-href="{{ node.url }}">{{ node.title }}</a></td>
         </tr>
         </tbody>
         <tbody data-ng-if="!listing.nodes.length">
         <tr>
-            <td colspan="4" class="error">{{ listing.errorMessage }}</td>
+            <td colspan="3" class="error">{{ listing.errorMessage }}</td>
         </tr>
         </tbody>
     </table>

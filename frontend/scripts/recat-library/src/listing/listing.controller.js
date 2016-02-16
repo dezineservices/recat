@@ -5,13 +5,15 @@
         .module('recatLibrary')
         .controller('ListingController', ListingController);
 
-    ListingController.$inject = ['$scope', '$element', 'core.service.library'];
+    ListingController.$inject = ['$scope', '$element', '$attrs', 'core.service.library'];
 
-    function ListingController ($scope, $element, service) {
+    function ListingController ($scope, $element, $attributes, service) {
         var MAX_PAGER_BUTTONS = 9;
 
         var vm = this,
-            currentTags = [];
+            currentSettings = getCurrentSettings($attributes.instance),
+            currentTags = [],
+            currentCondition = currentSettings.condition;
 
         vm.loaded = false;
         vm.loading = true;
@@ -30,10 +32,13 @@
         vm.requestFile = requestFile;
 
         vm.isFirstDownloadRequest = isFirstDownloadRequest();
-        vm.firstDownloadRequestUrl = Drupal.settings.recatLibrary.overlayUrl;
+        vm.firstDownloadRequestUrl = currentSettings.overlayUrl;
 
-        if (Drupal.settings.recatLibrary.tid) {
-            currentTags.push(Drupal.settings.recatLibrary.tid);
+        if (currentSettings.tid) {
+            var tids = currentSettings.tid.split(',');
+            for (var i = 0, len = tids.length; i < len; i += 1) {
+                currentTags.push(tids[i]);
+            }
         }
 
         loadData();
@@ -71,7 +76,7 @@
 
                 vm.isFirstDownloadRequest = false;
                 Drupal.behaviors.recatWfOverlay.openOverlayer(
-                    Drupal.settings.recatLibrary.overlayUrl);
+                    currentSettings.overlayUrl);
 
                 handleOverlay();
 
@@ -103,7 +108,7 @@
             handleOverlay(true);
 
             vm.loading = true;
-            service.getFiles(vm.currentPage, currentTags).then(handleSuccess, handleError);
+            service.getFiles(vm.currentPage, currentCondition, currentTags).then(handleSuccess, handleError);
         }
 
         function generatePager () {
@@ -201,7 +206,7 @@
                 return false;
             }
 
-            return !getCookie(Drupal.settings.recatLibrary.cookieName);
+            return !getCookie(currentSettings.cookieName);
         }
 
         function setFirstDownloadRequest () {
@@ -209,13 +214,21 @@
             today.setFullYear(today.getFullYear() + 10);
 
             document.cookie
-                = Drupal.settings.recatLibrary.cookieName + '=' + new Date().getTime() + '; expires=' + today.toGMTString() + '; path=/';
+                = currentSettings.cookieName + '=' + new Date().getTime() + '; expires=' + today.toGMTString() + '; path=/';
         }
 
         function getCookie (name) {
             var value = '; ' + document.cookie;
             var parts = value.split('; ' + name + '=');
             if (parts.length === 2) return parts.pop().split(';').shift();
+        }
+
+        function getCurrentSettings (instanceName) {
+            if (!instanceName || !Drupal.settings[instanceName]) {
+                return Drupal.settings.recatLibrary;
+            }
+
+            return angular.extend(Drupal.settings[instanceName], Drupal.settings.recatLibrary);
         }
     }
 })();

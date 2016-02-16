@@ -41,6 +41,7 @@ function recat_library_theme() {
             'template' => 'templates/block',
             'variables' => array(
                 'tags' => array(),
+                'instance_id' => '',
             ),
         ),
         'recat_library_tags' => array(
@@ -118,6 +119,18 @@ function recat_library_shortcode_block_process($attrs) {
         return;
     }
 
+    $settings = _recat_library_get_settings();
+    $condition = isset($attrs['condition'])
+        ? $attrs['condition'] : $settings['tags_query'];
+
+    switch (strtolower($condition)) {
+        case 'or':
+            $condition = 'or';
+            break;
+        default:
+            $condition = strtolower($settings['tags_query']);
+    }
+
     $tags = explode(',', $attrs['tag']);
     if (!$tags) {
         return;
@@ -141,17 +154,19 @@ function recat_library_shortcode_block_process($attrs) {
         $tids[] = $term->tid;
     }
 
-    return sprintf('[recat_library tid="%s" /]', implode(',', $tids));
+    return sprintf(
+        '[recat_library tid="%s" condition="%s" /]', implode(',', $tids), $condition);
 }
 
 function recat_library_shortcode_block_tips() {
-    return '<p><strong>[recat_library tag="term_name"]</strong>';
+    return '<p><strong>[recat_library tag="term_name" condition="and|or"]</strong></p>';
 }
 
 function recat_library_field_attach_view_alter(&$output, $context) {
-    $fieldName = array_keys($output);
+    $field_name = array_keys($output);
+    $instance_count = 0;
 
-    if ($items = field_get_items($context['entity_type'], $context['entity'], $fieldName[0])) {
+    if ($items = field_get_items($context['entity_type'], $context['entity'], $field_name[0])) {
         $parseForCode = array();
         foreach ($items as $key => $item) {
             if (isset($item['format'])) {
@@ -163,14 +178,17 @@ function recat_library_field_attach_view_alter(&$output, $context) {
         }
 
         foreach ($parseForCode as $key) {
-            if (isset($output[$fieldName[0]][$key]['#markup'])) {
-                $markup = $output[$fieldName[0]][$key]['#markup'];
+            if (isset($output[$field_name[0]][$key]['#markup'])) {
+                $markup = $output[$field_name[0]][$key]['#markup'];
 
-                $markup = preg_replace_callback('/(<p>)?\[recat_library(.*?)\/](<\/p>)?/', function ($matches) {
-                    $attributes = array();
-                    preg_match_all('/(tid)\=[\"](.*?)[\"]/', $matches[2], $attributes);
+                $markup = preg_replace_callback('/(<p>)?\[recat_library(.*?)\/](<\/p>)?/', function ($matches) use (&$instance_count) {
+                    $attributes_tid = array();
+                    $attributes_condition = array();
 
-                    $tids = explode(',', $attributes[2][array_search('tid', $attributes[1])]);
+                    preg_match_all('/(tid)\=[\"](.*?)[\"]/', $matches[2], $attributes_tid);
+                    preg_match('/(condition)\=[\"](.*?)[\"]/', $matches[2], $attributes_condition);
+
+                    $tids = explode(',', $attributes_tid[2][array_search('tid', $attributes_tid[1])]);
                     $terms = taxonomy_term_load_multiple($tids);
 
                     $block = block_load('recat_library', 'recat_library_simple');
@@ -178,9 +196,13 @@ function recat_library_field_attach_view_alter(&$output, $context) {
                         _block_render_blocks(array($block))
                     );
 
+                    $instance_id = sprintf('recatLibrary_%d', ++$instance_count);
+
+                    $block_renderable['recat_library_recat_library_simple']['#instance_id'] = $instance_id;
                     $block_renderable['recat_library_recat_library_simple']['#attached']['js'][] = array(
-                        'data' => array('recatLibrary' => array(
+                        'data' => array($instance_id => array(
                             'tid' => implode(',', array_keys($terms)),
+                            'condition' => $attributes_condition[2],
                         )),
                         'type' => 'setting',
                     );
@@ -188,7 +210,7 @@ function recat_library_field_attach_view_alter(&$output, $context) {
                     return render($block_renderable);
                 }, $markup);
 
-                $output[$fieldName[0]][$key]['#markup'] = $markup;
+                $output[$field_name[0]][$key]['#markup'] = $markup;
             }
         }
     }

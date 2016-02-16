@@ -26,6 +26,7 @@ function recat_blocks_theme() {
                 'icon' => '',
                 'url' => '',
                 'more_info' => '',
+                'is_last' => false,
             ),
         ),
         'recat_blocks_facts' => array(
