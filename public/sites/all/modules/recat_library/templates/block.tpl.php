@@ -7,14 +7,34 @@
     <?php else: ?>
     <div class="columns small-12">
     <?php endif; ?>
+        <?php if ($has_search): ?>
+        <div class="row">
+            <div class="columns small-12 medium-4">
+                <?php $placeholder = _hs_resource_get('recat_library.search.placeholder', 'plain', null, false); ?>
+                <input type="text" name="librarySearch" data-ng-model="listing.searchQuery" data-ng-change="listing.queryChange();" placeholder="{{ listing.searchQuery ? listing.searchQuery : '<?php print $placeholder; ?>' }}" />
+            </div>
+        </div>
+        <?php endif; ?>
         <div class="library relative ag-app" data-ng-class="{ loaded: listing.loaded }">
             <table class="tbl-listing tbl-library" cellspacing="0" cellpadding="0" data-ng-class="{ 'tbl-hover': listing.nodes.length }">
                 <thead>
                     <tr>
                         <th class="icon-column"><i class="sprite icon-lock"></i></th>
-                        <th data-ng-non-bindable><?php print _hs_resource_get('recat_library.table.document_title'); ?></th>
-                        <th data-ng-non-bindable><?php print _hs_resource_get('recat_library.table.tags'); ?></th>
-                        <th data-ng-non-bindable><?php print _hs_resource_get('recat_library.table.date'); ?></th>
+                        <th>
+                            <a class="sorting none-selectable" data-ng-click="listing.sortingChange('title');" data-ng-class="{ active: listing.isSortingActive('title'), up: listing.isSortingOrderDesc('title') }">
+                                <?php print _hs_resource_get('recat_library.table.document_title', 'plain', null, false); ?>
+                            </a>
+                        </th>
+                        <th>
+                            <a class="sorting none-selectable" data-ng-click="listing.sortingChange('tags');" data-ng-class="{ active: listing.isSortingActive('tags'), up: listing.isSortingOrderDesc('tags') }">
+                                <?php print _hs_resource_get('recat_library.table.tags', 'plain', null, false); ?>
+                            </a>
+                        </th>
+                        <th>
+                            <a class="sorting none-selectable" data-ng-click="listing.sortingChange('date');" data-ng-class="{ active: listing.isSortingActive('date'), up: listing.isSortingOrderDesc('date') }">
+                                <?php print _hs_resource_get('recat_library.table.date', 'plain', null, false); ?>
+                            </a>
+                        </th>
                     </tr>
                 </thead>
                 <tbody data-ng-if="listing.nodes.length">

@@ -13,7 +13,9 @@
         var vm = this,
             currentSettings = getCurrentSettings($attributes.instance),
             currentTags = [],
-            currentCondition = currentSettings.condition;
+            currentCondition = currentSettings.condition,
+            currentSortColumn = '',
+            currentSortOrder = '';
 
         vm.loaded = false;
         vm.loading = true;
@@ -22,14 +24,20 @@
         vm.totalPages = 0;
         vm.pages = [];
         vm.nodes = [];
+        vm.searchQuery = '';
         vm.errorMessage = '';
 
         vm.pagePrevious = pagePrevious;
         vm.pageNext = pageNext;
         vm.pageChange = pageChange;
         vm.filterChange = filterChange;
+        vm.sortingChange = sortingChange;
+        vm.queryChange = queryChange;
         vm.downloadFile = downloadFile;
         vm.requestFile = requestFile;
+
+        vm.isSortingActive = isSortingActive;
+        vm.isSortingOrderDesc = isSortingOrderDesc;
 
         vm.isFirstDownloadRequest = isFirstDownloadRequest();
         vm.firstDownloadRequestUrl = currentSettings.overlayUrl;
@@ -67,6 +75,27 @@
                 currentTags = removeTag(id);
             }
 
+            loadData();
+        }
+
+        function sortingChange (sortColumn) {
+            if (currentSortColumn === sortColumn) {
+                switch (currentSortOrder) {
+                    case 'asc':
+                        currentSortOrder = 'desc';
+                        break;
+                    case 'desc':
+                        currentSortOrder = 'asc';
+                }
+            } else {
+                currentSortColumn = sortColumn;
+                currentSortOrder = 'asc';
+            }
+
+            loadData();
+        }
+
+        function queryChange () {
             loadData();
         }
 
@@ -108,7 +137,9 @@
             handleOverlay(true);
 
             vm.loading = true;
-            service.getFiles(vm.currentPage, currentCondition, currentTags).then(handleSuccess, handleError);
+
+            service.getFiles(vm.searchQuery, vm.currentPage, currentCondition, currentSortColumn, currentSortOrder, currentTags)
+                .then(handleSuccess, handleError);
         }
 
         function generatePager () {
@@ -207,6 +238,14 @@
             }
 
             return !getCookie(currentSettings.cookieName);
+        }
+
+        function isSortingActive (sortingColumn) {
+            return currentSortColumn === sortingColumn;
+        }
+
+        function isSortingOrderDesc (sortingColumn) {
+            return currentSortOrder === 'desc' && isSortingActive(sortingColumn);
         }
 
         function setFirstDownloadRequest () {

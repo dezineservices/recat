@@ -2,6 +2,7 @@
 
 define('RECAT_LIBRARY_VOCABULARY_NAME', 'tags');
 define('RECAT_LIBRARY_COOKIE_NAME', 'recatLibraryFirstDownload');
+define('RECAT_LIBRARY_DEFAULT_SORT_COLUMN', 'n.title');
 
 function recat_library_menu() {
     $items = array();
@@ -42,6 +43,7 @@ function recat_library_theme() {
             'variables' => array(
                 'tags' => array(),
                 'instance_id' => '',
+                'has_search' => false,
             ),
         ),
         'recat_library_tags' => array(
@@ -199,6 +201,7 @@ function recat_library_field_attach_view_alter(&$output, $context) {
                     $instance_id = sprintf('recatLibrary_%d', ++$instance_count);
 
                     $block_renderable['recat_library_recat_library_simple']['#instance_id'] = $instance_id;
+                    $block_renderable['recat_library_recat_library_simple']['#has_search'] = false;
                     $block_renderable['recat_library_recat_library_simple']['#attached']['js'][] = array(
                         'data' => array($instance_id => array(
                             'tid' => implode(',', array_keys($terms)),
@@ -273,7 +276,7 @@ function _recat_library_get_file($hash) {
     return $query->execute()->fetch();
 }
 
-function _recat_library_get_nodes($tids = array(), $tid_where = 'OR', $limit = 10, $order_by = 'n.title', $order_direction = 'ASC') {
+function _recat_library_get_nodes($tids = array(), $tid_where = 'OR', $searchQuery = '', $limit = 10, $order_by = 'n.title', $order_direction = 'ASC') {
     global $language;
 
     $query = db_select('node', 'n')
@@ -284,16 +287,23 @@ function _recat_library_get_nodes($tids = array(), $tid_where = 'OR', $limit = 1
         ->condition('n.status', 1)
         ->condition('n.language', $language->language)
         ->condition('n.type', 'file')
-        ->orderBy($order_by, $order_direction)
         ->addTag('node_access')
         ->limit($limit);
 
-    if (!empty($tids)) {
-        $query->join('field_data_field_tags', 'tags', 'tags.entity_id = n.nid');
-        $query->condition('tags.entity_type', 'node');
+    if ($searchQuery) {
+        $query->condition('n.title', '%' . db_like($searchQuery) . '%', 'LIKE');
+    }
 
-        $query->condition('tags.field_tags_tid', $tids, 'IN')
-            ->groupBy('tags.entity_id');
+    if (!empty($tids) || $order_by === 'tags_data.name') {
+        $query->join('field_data_field_tags', 'tags', 'tags.entity_id = n.nid');
+        $query->join('taxonomy_term_data', 'tags_data', 'tags_data.tid = tags.field_tags_tid');
+
+        $query->condition('tags.entity_type', 'node');
+        $query->groupBy('tags.entity_id');
+    }
+
+    if (!empty($tids)) {
+        $query->condition('tags.field_tags_tid', $tids, 'IN');
 
         if ($tid_where === 'AND') {
             $query->havingCondition('tags_file', count($tids))
@@ -301,6 +311,7 @@ function _recat_library_get_nodes($tids = array(), $tid_where = 'OR', $limit = 1
         }
     }
 
+    $query->orderBy($order_by, $order_direction);
     $nids = $query->execute()->fetchAllAssoc('nid');
 
     return array($query->getCurrentPage(),  $query->getTotalPages(), $query->getTotalItemCount(), $nids);

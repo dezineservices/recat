@@ -50,6 +50,7 @@ function _recat_library_block_get_build($instance_id = '') {
     }
 
     return array(
+        '#has_search' => true,
         '#instance_id' => $instance_id,
         '#attached' => array(
             'js' => array(

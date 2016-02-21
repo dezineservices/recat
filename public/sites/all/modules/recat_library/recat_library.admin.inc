@@ -87,7 +87,7 @@ function recat_library_admin($form, &$form_state) {
         '#markup' => _hs_resource_get('recat_library.table.date'),
     );
 
-    $form[$key]['document_date'] = array(
+    $form[$key]['document_no_results'] = array(
         '#type' => 'markup',
         '#prefix' => '<div class="form-item"><label>' . t('No results message') . '</label>',
         '#suffix' => '</div>',

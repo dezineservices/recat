@@ -12,14 +12,29 @@
             getFiles: getFiles
         };
 
-        function getFiles (page, condition, tags) {
-            return loadData(page, condition, tags);
+        function getFiles (searchQuery, page, condition, sortColumn, sortOrder, tags) {
+            return loadData(searchQuery, page, condition, sortColumn, sortOrder, tags);
         }
 
-        function loadData (page, condition, tags) {
-            var params = { condition: condition };
+        function loadData (searchQuery, page, condition, sortColumn, sortOrder, tags) {
+            var params = {
+                searchQuery: searchQuery
+            };
+
             if (page) {
                 params.page = parseInt(page, 10);
+            }
+
+            if (condition) {
+                params.condition = condition;
+            }
+
+            if (sortColumn) {
+                params.sort = sortColumn;
+            }
+
+            if (sortOrder) {
+                params.sortOrder = sortOrder;
             }
 
             if (tags.length) {

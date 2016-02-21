@@ -9,8 +9,12 @@ function recat_library_ajax() {
     $settings = _recat_library_get_settings();
     
     try {
+        $searchQuery = filter_input(INPUT_GET, 'searchQuery', FILTER_SANITIZE_URL);
         $condition = filter_input(INPUT_GET, 'condition', FILTER_SANITIZE_URL);
         $tids = filter_input(INPUT_GET, 'tid', FILTER_SANITIZE_URL);
+
+        $sort_column = recat_library_ajax_get_sort_column(filter_input(INPUT_GET, 'sort', FILTER_SANITIZE_URL));
+        $sort_order = recat_library_ajax_get_sort_order(filter_input(INPUT_GET, 'sortOrder', FILTER_SANITIZE_URL));
 
         if (!$condition) {
             $condition = $settings['tags_query'];
@@ -25,7 +29,7 @@ function recat_library_ajax() {
         }
 
         list($current_page, $total_pages, $total, $nids)
-            = _recat_library_get_nodes($tids ? explode(',', $tids) : array(), $condition, $settings['items_per_page']);
+            = _recat_library_get_nodes($tids ? explode(',', $tids) : array(), $condition, $searchQuery, $settings['items_per_page'], $sort_column, $sort_order);
 
         if (empty($nids)) {
             throw new Exception('recat_library.no_results_message', 404);
@@ -90,4 +94,28 @@ function recat_library_ajax() {
     }
     
     return $output;
+}
+
+function recat_library_ajax_get_sort_column($column) {
+    if (!$column) {
+        return RECAT_LIBRARY_DEFAULT_SORT_COLUMN;
+    }
+
+    switch (strtolower($column)) {
+        case 'date':
+            return 'n.created';
+        case 'tags':
+            return 'tags_data.name';
+        default:
+            return RECAT_LIBRARY_DEFAULT_SORT_COLUMN;
+    }
+}
+
+function recat_library_ajax_get_sort_order($order) {
+    switch (strtolower($order)) {
+        case 'desc':
+            return 'DESC';
+        default:
+            return 'ASC';
+    }
 }
