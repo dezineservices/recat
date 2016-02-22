@@ -103,7 +103,7 @@ function _recat_news_block_latest_view($key) {
 }
 
 function _recat_news_block_tags_configure($key) {
-
+    // no configuration
 }
 
 function _recat_news_block_tags_save($form_state, $key) {
@@ -117,7 +117,7 @@ function _recat_news_block_tags_view($key) {
 }
 
 function _recat_news_block_categories_configure($key) {
-
+    // no configuration
 }
 
 function _recat_news_block_categories_save($form_state, $key) {
@@ -135,5 +135,33 @@ function _recat_news_block_categories_view($key) {
 
     return theme('recat_news_categories', array(
         'categories' => $categories,
+    ));
+}
+
+function _recat_news_block_years_configure($key) {
+    // no configuration
+}
+
+function _recat_news_block_years_save($form_state, $key) {
+    // nothing to save
+}
+
+function _recat_news_block_years_view($key) {
+    $years = [];
+    foreach (_recat_news_get_nodes() as $nid => $node) {
+        $year = date('Y', $node->created);
+        if (!isset($years[$year])) {
+            $years[$year] = array(
+                'label' => $year,
+                'url' => _recat_news_get_url($year),
+                'count' => 0,
+            );
+        }
+
+        $years[$year]['count']++;
+    }
+
+    return theme('recat_news_years', array(
+        'years' => $years,
     ));
 }

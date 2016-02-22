@@ -14,6 +14,16 @@ function recat_news_menu() {
         'file' => 'recat_news.admin.inc',
     );
 
+    $items[_recat_news_get_url()] = array(
+        'title' => 'News',
+        'title callback' => 'recat_news_year_page_title',
+        'page callback' => 'recat_news_year_page',
+        'page arguments' => array(1),
+        'access arguments' => array('access content'),
+        'type' => MENU_CALLBACK,
+        'file' => 'recat_news.pages.inc',
+    );
+
     return $items;
 }
 
@@ -50,6 +60,12 @@ function recat_news_theme() {
             'template' => 'templates/categories',
             'variables' => array(
                 'categories' => array(),
+            ),
+        ),
+        'recat_news_years' => array(
+            'template' => 'templates/years',
+            'variables' => array(
+                'years' => array(),
             ),
         ),
         'recat_news_teaser' => array(
@@ -90,6 +106,11 @@ function recat_news_block_info() {
         'cache' => DRUPAL_CACHE_PER_ROLE
     );
 
+    $blocks['recat_news_years'] = array(
+        'info' => t('News years'),
+        'cache' => DRUPAL_CACHE_PER_ROLE
+    );
+
     return $blocks;
 }
 
@@ -107,6 +128,9 @@ function recat_news_block_configure($delta = '') {
         case 'recat_news_categories':
             module_load_include('blocks.inc', 'recat_news', 'recat_news');
             return _recat_news_block_categories_configure($delta);
+        case 'recat_news_years':
+            module_load_include('blocks.inc', 'recat_news', 'recat_news');
+            return _recat_news_block_years_configure($delta);
 
     }
 }
@@ -125,6 +149,9 @@ function recat_news_block_save($delta = '', $edit = array()) {
         case 'recat_news_categories':
             module_load_include('blocks.inc', 'recat_news', 'recat_news');
             return _recat_news_block_categories_save($edit, $delta);
+        case 'recat_news_years':
+            module_load_include('blocks.inc', 'recat_news', 'recat_news');
+            return _recat_news_block_years_save($edit, $delta);
 
     }
 }
@@ -151,6 +178,11 @@ function recat_news_block_view($delta = '') {
             module_load_include('blocks.inc', 'recat_news', 'recat_news');
             return array(
                 'content' => _recat_news_block_categories_view($delta),
+            );
+        case 'recat_news_years':
+            module_load_include('blocks.inc', 'recat_news', 'recat_news');
+            return array(
+                'content' => _recat_news_block_years_view($delta),
             );
     }
 }
@@ -195,6 +227,10 @@ function recat_news_image_default_styles() {
 }
 
 function recat_news_preprocess_page(&$variables) {
+    if (_recat_news_get_url() === arg(0) . '/%') {
+        $variables['is_recat_news'] = true;
+    }
+
     $term = menu_get_object('taxonomy_term', 2);
     if (!$term) {
         return;
@@ -208,7 +244,7 @@ function recat_news_preprocess_page(&$variables) {
     $variables['term'] = $term;
 }
 
-function _recat_news_get_nodes($limit = null, $usePager = false, $order_by = 'created', $order_direction = 'DESC') {
+function _recat_news_get_nodes($limit = null, $usePager = false, $order_by = 'created', $order_direction = 'DESC', $conditions = array()) {
     global $language;
 
     $query = db_select('node', 'n');
@@ -217,12 +253,16 @@ function _recat_news_get_nodes($limit = null, $usePager = false, $order_by = 'cr
     }
 
     $query
-        ->fields('n', array('nid'))
+        ->fields('n', array('nid', 'created'))
         ->condition('status', 1)
         ->condition('language', $language->language)
         ->condition('type', 'news')
         ->orderBy($order_by, $order_direction)
         ->addTag('node_access');
+
+    foreach ($conditions as $condition) {
+        $query->condition($condition['column'], $condition['value'], $condition['operator']);
+    }
 
     if ($usePager && $limit) {
         $query->limit($limit);
@@ -324,4 +364,8 @@ function _recat_news_get_settings($key = 'recat_news') {
 function _recat_news_is_taxonomy_page($term) {
     return $term->vocabulary_machine_name === RECAT_NEWS_TAGS_VOCABULARY_NAME
         || $term->vocabulary_machine_name === RECAT_NEWS_CATEGORIES_VOCABULARY_NAME;
+}
+
+function _recat_news_get_url($year = '%') {
+    return sprintf('recat_news/%s', $year);
 }

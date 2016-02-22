@@ -161,7 +161,7 @@ function recat_library_shortcode_block_process($attrs) {
 }
 
 function recat_library_shortcode_block_tips() {
-    return '<p><strong>[recat_library tag="term_name" condition="and|or"]</strong></p>';
+    return '<p><strong>[recat_library tag="term_name" condition="and|or" /]</strong></p>';
 }
 
 function recat_library_field_attach_view_alter(&$output, $context) {
@@ -306,10 +306,16 @@ function _recat_library_get_nodes($tids = array(), $tid_where = 'OR', $searchQue
         $query->condition('tags.field_tags_tid', $tids, 'IN');
 
         if ($tid_where === 'AND') {
+            $query->join('field_data_field_tags', 'tags_count', 'tags_count.entity_id = n.nid');
+
             $query->havingCondition('tags_file', count($tids))
                 ->addExpression('COUNT(DISTINCT tags.field_tags_tid)', 'tags_file');
+
+            $query->havingCondition('tags_file_count', count($tids))
+                ->addExpression('COUNT(DISTINCT tags_count.field_tags_tid)', 'tags_file_count');
         }
     }
+
 
     $query->orderBy($order_by, $order_direction);
     $nids = $query->execute()->fetchAllAssoc('nid');
