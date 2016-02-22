@@ -17,6 +17,7 @@ function recat_news_menu() {
     $items[_recat_news_get_url()] = array(
         'title' => 'News',
         'title callback' => 'recat_news_year_page_title',
+        'title arguments' => array(1),
         'page callback' => 'recat_news_year_page',
         'page arguments' => array(1),
         'access arguments' => array('access content'),
@@ -368,4 +369,12 @@ function _recat_news_is_taxonomy_page($term) {
 
 function _recat_news_get_url($year = '%') {
     return sprintf('recat_news/%s', $year);
+}
+
+function recat_news_year_page_title($year, $use_contextual = false) {
+    $title = $use_contextual
+        ? _hs_resource_get('recat_news.listing.results_title_year')
+        : _hs_resource_get('recat_news.listing.results_title_year', 'plain', null, false);
+
+    return str_replace('!year', $year, $title);
 }

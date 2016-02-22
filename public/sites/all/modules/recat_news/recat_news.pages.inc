@@ -56,14 +56,10 @@ function recat_news_year_page($year) {
     return array(
         'teasers' => array(
             '#theme' => 'recat_news_listing',
-            '#title' => recat_news_year_page_title($year),
+            '#title' => recat_news_year_page_title($year, true),
             '#teasers' => $teasers,
             '#item_per_line' => 2,
         ),
         'pager' => _recat_core_get_pager_build(),
     );
-}
-
-function recat_news_year_page_title($year) {
-    return str_replace('!year', $year, _hs_resource_get('recat_news.listing.results_title_year'));
 }
