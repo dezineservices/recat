@@ -70,6 +70,7 @@ function recat_preprocess_block(&$variables) {
             break;
         case 'recatNewsTags':
         case 'recatNewsCategories':
+        case 'recatNewsYears':
         case 'recatActivitySidebar':
             $variables['theme_hook_suggestions'][] = 'block__sidebar_panel';
             $variables['title_attributes_array']['class'] = array('title');
@@ -192,12 +193,13 @@ function _recat_preprocess_page_block_reference(&$variables) {
 
 function _recat_preprocess_page_news(&$variables) {
     if ((!isset($variables['node']) || $variables['node']->type !== 'news')
-        && (!isset($variables['term']) || !isset($variables['term']->is_news))) {
+        && (!isset($variables['term']) || !isset($variables['term']->is_news))
+        && !isset($variables['is_recat_news'])) {
         return;
     }
 
     $blocks = array();
-    foreach (array('recat_news_tags', 'recat_news_categories') as $block_name) {
+    foreach (array('recat_news_tags', 'recat_news_categories', 'recat_news_years') as $block_name) {
         $block = block_load('recat_news', $block_name);
         if (!$block) {
             continue;

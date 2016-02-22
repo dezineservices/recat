@@ -94,6 +94,13 @@ function recat_library_admin($form, &$form_state) {
         '#markup' => _hs_resource_get('recat_library.no_results_message'),
     );
 
+    $form[$key]['document_search_placeholder'] = array(
+        '#type' => 'markup',
+        '#prefix' => '<div class="form-item"><label>' . t('Search field placeholder') . '</label>',
+        '#suffix' => '</div>',
+        '#markup' => _hs_resource_get('recat_library.search.placeholder'),
+    );
+
     return system_settings_form($form);
 }
 
