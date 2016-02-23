@@ -291,7 +291,9 @@ function _recat_library_get_nodes($tids = array(), $tid_where = 'OR', $searchQue
         ->limit($limit);
 
     if ($searchQuery) {
-        $query->condition('n.title', '%' . db_like($searchQuery) . '%', 'LIKE');
+        foreach (explode('%20', $searchQuery) as $searchQueryPart) {
+            $query->condition('n.title', '%' . db_like($searchQueryPart) . '%', 'LIKE');
+        }
     }
 
     if (!empty($tids) || $order_by === 'tags_data.name') {

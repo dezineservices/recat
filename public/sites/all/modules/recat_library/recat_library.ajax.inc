@@ -9,7 +9,7 @@ function recat_library_ajax() {
     $settings = _recat_library_get_settings();
     
     try {
-        $searchQuery = filter_input(INPUT_GET, 'searchQuery', FILTER_SANITIZE_URL);
+        $searchQuery = filter_input(INPUT_GET, 'searchQuery', FILTER_SANITIZE_ENCODED);
         $condition = filter_input(INPUT_GET, 'condition', FILTER_SANITIZE_URL);
         $tids = filter_input(INPUT_GET, 'tid', FILTER_SANITIZE_URL);
 
