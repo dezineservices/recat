@@ -65,6 +65,9 @@ function recat_preprocess_block(&$variables) {
         case 'recatNews':
             $variables['classes_array'][] = 'block-neutral';
             break;
+        case 'recatNewsLatest':
+            $variables['attributes_array']['data-equalheight'] = '';
+            break;
         case 'recatFeedback':
             $variables['classes_array'][] = 'sprite-before';
             break;

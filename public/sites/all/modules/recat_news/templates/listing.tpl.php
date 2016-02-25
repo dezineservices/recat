@@ -7,7 +7,7 @@
 
     <?php foreach ($teasers as $teaser): $is_last = $counter === count($teasers) - 1; ?>
     <?php if ($counter % $item_per_line === 0): $is_closed = false; ?>
-    <div class="row">
+    <div class="row" data-equalheight>
     <?php endif; ?>
 
         <div class="columns small-12 medium-<?php print $medium_column; ?><?php print $is_last ? ' end': ''; ?>">
