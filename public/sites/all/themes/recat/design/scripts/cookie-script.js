@@ -52,7 +52,7 @@
 			
 cookieScriptCurrentValue=cookieScriptReadCookie("cookiescriptaccept");
 if(cookieScriptCurrentValue == "visit") return false; 
-            cookieQuery("body",cookieScriptWindow).append('<div id="cookiescript_injected"><div id="cookiescript_wrapper">'+cookieScriptTitle+cookieScriptDesc+'<div id="cookiescript_buttons"><div id="cookiescript_accept">'+cookieScriptAccept+'</div><div id="cookiescript_readmore">'+cookieScriptMore+'</div></div><a href="//'+cookieScriptSource+'" target="_blank" id="cookiescript_link" style="display:block !important">Free cookie consent by cookie-script.com</a><div id="cookiescript_pixel"></div></div>');
+            cookieQuery("body",cookieScriptWindow).append('<div id="cookiescript_injected"><div id="cookiescript_wrapper">'+cookieScriptTitle+cookieScriptDesc+'<div id="cookiescript_buttons"><div id="cookiescript_accept">'+cookieScriptAccept+'</div><div id="cookiescript_readmore">'+cookieScriptMore+'</div></div><div id="cookiescript_pixel"></div></div>');
             cookieQuery("#cookiescript_injected",cookieScriptWindow).css({
                "background-color": "#EEEEEE",
                 "z-index": 999999,

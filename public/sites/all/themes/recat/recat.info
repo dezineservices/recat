@@ -24,3 +24,4 @@ scripts[] = design/scripts/vendor/foundation.min.js
 scripts[] = design/scripts/vendor/foundation.tooltip.min.js
 scripts[] = design/scripts/vendor/jquery.uniform.min.js
 scripts[] = design/scripts/functions.js
+scripts[] = design/scripts/cookie-script.js
