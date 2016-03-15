@@ -324,7 +324,7 @@ function _recat_library_get_nodes($tids = array(), $tid_where = 'OR', $searchQue
 
     $query->orderBy($order_by, $order_direction);
     $nids = $query->execute()->fetchAllAssoc('nid');
-    
+
     return array($query->getCurrentPage(),  $query->getTotalPages(), $query->getTotalItemCount(), $nids);
 }
 

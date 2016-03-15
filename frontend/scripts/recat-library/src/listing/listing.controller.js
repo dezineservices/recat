@@ -15,7 +15,8 @@
             currentTags = [],
             currentCondition = currentSettings.condition,
             currentSortColumn = '',
-            currentSortOrder = '';
+            currentSortOrder = '',
+            isFirstLoad = true;
 
         vm.loaded = false;
         vm.loading = true;
@@ -202,6 +203,7 @@
 
             vm.pages = generatePager();
 
+            scrollToContext();
             setTimeout(handleOverlay, 100);
         }
 
@@ -254,6 +256,17 @@
 
             document.cookie
                 = currentSettings.cookieName + '=' + new Date().getTime() + '; expires=' + today.toGMTString() + '; path=/';
+        }
+
+        function scrollToContext () {
+            if (isFirstLoad) {
+                isFirstLoad = false;
+                return;
+            }
+
+            jQuery('html, body').animate({
+                scrollTop: $element.offset().top
+            }, 400);
         }
 
         function getCookie (name) {

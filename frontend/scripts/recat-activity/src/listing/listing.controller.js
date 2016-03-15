@@ -5,13 +5,14 @@
         .module('recatActivity')
         .controller('ListingController', ListingController);
 
-    ListingController.$inject = ['core.service.library'];
+    ListingController.$inject = ['$element', 'core.service.library'];
 
-    function ListingController (service) {
+    function ListingController ($element, service) {
         var MAX_PAGER_BUTTONS = 9;
 
         var vm = this,
-            currentTid = null;
+            currentTid = null,
+            isFirstLoad = true;
 
         vm.loaded = false;
         vm.loading = true;
@@ -101,6 +102,8 @@
             vm.totalPages = data.pager.pages;
 
             vm.pages = generatePager();
+
+            scrollToContext();
         }
 
         function handleError (errorData) {
@@ -111,6 +114,19 @@
             vm.currentPage = vm.totalPages = 0;
 
             vm.errorMessage = errorData.text;
+
+            scrollToContext();
+        }
+
+        function scrollToContext () {
+            if (isFirstLoad) {
+                isFirstLoad = false;
+                return;
+            }
+
+            jQuery('html, body').animate({
+                scrollTop: $element.offset().top
+            }, 400);
         }
     }
 })();
