@@ -15,6 +15,6 @@
     </div>
 </div>
 
-<span class="icons sprite-before sprite-after">
+<span class="icons sprite-before sprite-after" data-headliner-scroll>
     <i class="icon sprite"></i>
 </span>
