@@ -75,7 +75,8 @@
     <div class="row">
         <div class="columns small-12 medium-2">
             <a href="<?php print $front_page; ?>" title="<?php print $site_name; ?>" class="site-logo">
-                <img src="<?php print $logo; ?>" alt="<?php print $site_slogan; ?>" />
+                <img src="/sites/default/files/eurocontrol-logo-white.png" alt="<?php print $site_slogan; ?>" />
+                <!--<img src="<//?php print $logo; ?>" alt="<//?php print $site_slogan; ?>" />-->
                 <!--<//?php if (isset($site_name_abbr)): ?>
                     <//?php print $site_name_abbr; ?>
                 <//?php endif; ?>-->
