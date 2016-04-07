@@ -3,9 +3,9 @@
         <div class="columns small-12 medium-2">
             <a href="<?php print $front_page; ?>" title="<?php print $site_name; ?>" class="site-logo" id="logo">
                 <img src="<?php print $logo; ?>" alt="<?php print $site_slogan; ?>" />
-                <?php if (isset($site_name_abbr)): ?>
-                    <?php print $site_name_abbr; ?>
-                <?php endif; ?>
+                <!--<//?php if (isset($site_name_abbr)): ?>
+                    <//?php print $site_name_abbr; ?>
+                <//?php endif; ?>-->
             </a>
         </div>
         <div class="columns small-12 medium-7">
