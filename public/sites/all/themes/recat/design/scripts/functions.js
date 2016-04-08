@@ -170,3 +170,26 @@ var RecatForms = (function (el, $) {
         uniform: uniform
     };
 }) (document.querySelectorAll('input[type="radio"], input[type="checkbox"]'), jQuery);
+
+var RecatHeadlinerScroll = (function (el, $, CLICK_EVENT, ANIMATION_SPEED) {
+    if (!el) {
+        return;
+    }
+
+    var onClick = function () {
+        var nextSection = $(el).next('.block');
+        if (!nextSection.length) {
+            return false;
+        }
+
+        $('html, body').animate({
+            scrollTop: nextSection.offset().top
+        }, ANIMATION_SPEED);
+
+        return false;
+    };
+
+    $('[data-headliner-scroll]', el).unbind(CLICK_EVENT)
+        .bind(CLICK_EVENT, onClick);
+
+}) (document.getElementById('recatHeadliner'), jQuery, 'click.recatHeadliner', 400);

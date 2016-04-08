@@ -102,6 +102,16 @@ function recat_library_block_view($delta = '') {
     }
 }
 
+function recat_library_form_alter(&$form, &$form_state, $form_id) {
+    if (strpos($form_id, 'webform') === false) {
+        return;
+    }
+
+    if (isset($form['#submit'])) {
+        array_unshift($form['#submit'], '_recat_library_form_submit');
+    }
+}
+
 function recat_library_shortcode_info() {
     $shortcodes = array();
 
@@ -367,4 +377,14 @@ function _recat_library_get_settings($key = 'recat_library') {
 
 function _recat_library_is_taxonomy_page($term) {
     return $term->vocabulary_machine_name === RECAT_LIBRARY_VOCABULARY_NAME;
+}
+
+function _recat_library_form_submit($form, &$form_state) {
+    $settings = _recat_library_get_settings();
+    if (!isset($form['#node'])
+        || $form['#node']->nid !== $settings['first_visit_overlay']) {
+        return;
+    }
+
+    setrawcookie(RECAT_LIBRARY_COOKIE_NAME, time(), strtotime('+10 years'), '/');
 }
