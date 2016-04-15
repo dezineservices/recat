@@ -6,6 +6,10 @@ $borderRadius: 5px;
   margin: 0 0 70px;
   @include border-radius($borderRadius);
 
+  .content {
+    max-height: 1000px;
+  }
+
   p {
     margin: 0 0 14px;
     font-size: 90%;
