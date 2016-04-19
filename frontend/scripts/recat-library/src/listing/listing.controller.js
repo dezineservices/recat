@@ -102,14 +102,10 @@
 
         function downloadFile (file) {
             if (isFirstDownloadRequest()) {
-                setFirstDownloadRequest();
-
-                vm.isFirstDownloadRequest = false;
                 Drupal.behaviors.recatWfOverlay.openOverlayer(
                     currentSettings.overlayUrl);
 
                 handleOverlay();
-
                 return;
             }
 
@@ -127,10 +123,6 @@
 
         function requestFile () {
             handleOverlay(true);
-
-            setFirstDownloadRequest();
-            vm.isFirstDownloadRequest = false;
-
             setTimeout(handleOverlay, 100);
         }
 
@@ -248,14 +240,6 @@
 
         function isSortingOrderDesc (sortingColumn) {
             return currentSortOrder === 'desc' && isSortingActive(sortingColumn);
-        }
-
-        function setFirstDownloadRequest () {
-            var today = new Date();
-            today.setFullYear(today.getFullYear() + 10);
-
-            document.cookie
-                = currentSettings.cookieName + '=' + new Date().getTime() + '; expires=' + today.toGMTString() + '; path=/';
         }
 
         function scrollToContext () {

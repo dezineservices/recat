@@ -63,6 +63,8 @@ function recat_library_ajax() {
                 $tags[] = $tag->name;
             }
 
+            $file_extension = explode('.', $field_file['filename']);
+
             if ($node_wrapper->field_private->value() === false) {
                 $url = url(_recat_library_get_url('download', $field_file['hash']), array(
                     'absolute' => true,
@@ -81,6 +83,7 @@ function recat_library_ajax() {
                 'date' => format_date($node->created, $settings['date_format']),
                 'private' => $node_wrapper->field_private->value(),
                 'url' => $url,
+                'file_extension' => array_pop($file_extension),
             );
         }
 

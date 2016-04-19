@@ -35,6 +35,7 @@
                                 <?php print _hs_resource_get('recat_library.table.date', 'plain', null, false); ?>
                             </a>
                         </th>
+                        <th><?php print _hs_resource_get('recat_library.table.file_extension', 'plain', null, false); ?></th>
                     </tr>
                 </thead>
                 <tbody data-ng-if="listing.nodes.length">
@@ -46,6 +47,7 @@
                         </td>
                         <td>{{ node.tags }}</td>
                         <td>{{ node.date }}</td>
+                        <td>{{ node.file_extension }}</td>
                     </tr>
                 </tbody>
                 <tbody data-ng-if="!listing.nodes.length">
