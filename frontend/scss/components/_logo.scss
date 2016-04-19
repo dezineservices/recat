@@ -11,13 +11,6 @@ a.site-logo {
   img {
     position: absolute;
     margin: -1px 0 0 -49px;
-    @include transition(transform .2s ease-in-out);
-  }
-
-  &:hover {
-    img {
-      @include transform(scale(.9));
-    }
   }
 }
 
