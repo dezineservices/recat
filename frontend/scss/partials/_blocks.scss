@@ -6,6 +6,39 @@
     font-size: 35px;
     margin: -10px 0 60px;
   }
+
+  &.block-form-sidebar {
+    padding: 20px;
+    border-radius: 5px;
+
+    .block-title {
+      font-size: 25px;
+      margin: 0 0 20px;
+    }
+
+    .form-item {
+      input, textarea {
+        background: #fff;
+      }  
+    }
+  }
+
+  &.block-form-content {
+    margin: 0 0 20px;
+    padding: 20px;
+    border-radius: 5px;
+
+    .block-title {
+      font-size: 25px;
+      margin: 0 0 20px;
+    }
+
+    .form-item {
+      input, textarea {
+        background: #fff;
+      }  
+    }
+  }
 }
 
 section.block,

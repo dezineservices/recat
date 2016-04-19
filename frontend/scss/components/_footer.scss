@@ -5,12 +5,13 @@
   z-index: 2;
 
   .copyright {
+    width: 70%; 
     text-align: center;
     font-size: 80%;
     color: #8493a8;
     border-top: 1px solid #54657e;
     padding: 13px 0 0;
-    margin: 13px 0 0;
+    margin: 13px auto 0 auto;
   }
 
   p {
