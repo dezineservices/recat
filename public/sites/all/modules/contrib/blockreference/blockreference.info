@@ -16,9 +16,9 @@ files[] = MigrateBlockReferenceFieldHandler.inc
 ; Tell Drupal this dev version is 2.0, for updates
 version = 7.x-2.0-DEV
 
-; Information added by Drupal.org packaging script on 2015-05-08
-version = "7.x-2.2"
+; Information added by Drupal.org packaging script on 2016-02-09
+version = "7.x-2.3"
 core = "7.x"
 project = "blockreference"
-datestamp = "1431097982"
+datestamp = "1455021861"
 
