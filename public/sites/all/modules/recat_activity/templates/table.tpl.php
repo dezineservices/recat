@@ -1,4 +1,4 @@
-<div class="activity relative ag-app" data-ng-app="recatActivity" data-ng-controller="ListingController as listing" data-ng-class="{ loaded: listing.loaded }">
+<div class="activity relative ag-app" data-ng-app="recatActivity" data-ng-controller="ListingController as listing" data-ng-class="{ loaded: listing.loaded }" data-ng-cloak>
     <table class="tbl-listing tbl-activity" cellspacing="0" cellpadding="0" data-ng-class="{ 'tbl-hover': listing.nodes.length }">
         <thead>
         <tr>

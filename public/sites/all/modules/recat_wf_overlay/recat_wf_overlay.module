@@ -104,6 +104,8 @@ function _recat_wf_overlay_inject_submit_action(&$form, &$components) {
 
         if (isset($form['actions'])) {
             $components['actions'] = $form['actions'];
+            $components['actions']['#tree'] = false;
+
             $form['actions']['#access'] = false;
         }
     }

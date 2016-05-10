@@ -1,4 +1,4 @@
-<div class="row" data-recat-app="recatLibrary" data-ng-controller="ListingController as listing" data-instance="<?php print $instance_id; ?>">
+<div class="row" data-recat-app="recatLibrary" data-ng-controller="ListingController as listing" data-ng-cloak data-instance="<?php print $instance_id; ?>">
     <?php if ($tags): ?>
     <div class="columns-sidebar columns small-12 medium-3">
         <?php print drupal_render($tags); ?>
