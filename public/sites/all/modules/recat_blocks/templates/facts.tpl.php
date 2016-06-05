@@ -1,6 +1,6 @@
 <div class="row">
     <?php foreach ($facts as $fact): ?>
-    <div class="columns small-12 medium-6 large-3">
+    <div class="columns small-12 medium-4">
         <div class="fact">
             <div class="number">
                 <i class="icon sprite <?php print $fact['class']; ?>"></i>

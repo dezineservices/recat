@@ -23,25 +23,17 @@ function _recat_blocks_facts_configure($key) {
         );
     }
 
-    $terms = array();
-    foreach (_recat_activity_get_terms() as $term) {
-        $terms[$term->tid] = $term->name;
+    $date_formats = array();
+    foreach (system_get_date_types() as $date_type) {
+        $date_formats[$date_type['type']] = $date_type['title'];
     }
 
-    $form[$key]['conference_docs_tid'] = array(
+    $form[$key]['date_format'] = array(
         '#type' => 'select',
-        '#title' => t('Conference docs taxonomy'),
+        '#title' => t('Date format'),
         '#required' => true,
-        '#options' => $terms,
-        '#default_value' => $settings ? $settings['conference_docs_tid'] : '',
-    );
-
-    $form[$key]['project_files_tid'] = array(
-        '#type' => 'select',
-        '#title' => t('Project files taxonomy'),
-        '#required' => true,
-        '#options' => $terms,
-        '#default_value' => $settings ? $settings['project_files_tid'] : '',
+        '#options' => $date_formats,
+        '#default_value' => $settings ? $settings['date_format'] : '',
     );
         
     return $form;
@@ -65,21 +57,20 @@ function _recat_blocks_facts_view($key) {
             case 'unique_visits':
                 $number = _recat_blocks_facts_get_unique_visitors();
                 break;
-            case 'news_posts':
-                $number = _recat_blocks_facts_get_news_posts_count();
+            case 'total_projects':
+                $number = _recat_blocks_facts_get_project_posts_count();
                 break;
-            case 'conference_docs':
-                $number = _recat_blocks_facts_get_node_count_for_tid($settings['conference_docs_tid']);
-                break;
-            case 'project_files':
-                $number = _recat_blocks_facts_get_node_count_for_tid($settings['project_files_tid']);
+            case 'latest_node_update':
+                $number = _recat_blocks_facts_get_latest_node_update();
                 break;
         }
 
         $facts[] = array(
             'class' => $fact_key,
             'label' => _hs_resource_get($resource_key . '.title'),
-            'number' => _recat_blocks_facts_format_number($number),
+            'number' => $fact_key === 'latest_node_update'
+                ? _recat_blocks_facts_format_date($number, isset($settings['date_format']) ? $settings['date_format'] : '')
+                : _recat_blocks_facts_format_number($number),
         );
     }
 
@@ -87,14 +78,14 @@ function _recat_blocks_facts_view($key) {
 }
 
 function _recat_blocks_facts_get_fact_keys() {
-    return array('unique_visits', 'news_posts', 'conference_docs', 'project_files');
+    return array('unique_visits', 'total_projects', 'latest_node_update');
 }
 
 function _recat_blocks_facts_get_unique_visitors() {
     return db_query('SELECT COUNT(DISTINCT visitors_ip) FROM {visitors}')->fetchField();
 }
 
-function _recat_blocks_facts_get_news_posts_count() {
+function _recat_blocks_facts_get_project_posts_count() {
     global $language;
 
     $query = db_select('node', 'n');
@@ -102,23 +93,30 @@ function _recat_blocks_facts_get_news_posts_count() {
         ->fields('n', array('nid'))
         ->condition('status', 1)
         ->condition('language', $language->language)
-        ->condition('type', 'news')
+        ->condition('type', 'activity')
         ->addTag('node_access');
 
     return $query->execute()->rowCount();
 }
 
-function _recat_blocks_facts_get_node_count_for_tid($tid) {
-    $tids = array();
-    foreach (_recat_activity_get_terms($tid) as $term) {
-        $tids[] = $term->tid;
+function _recat_blocks_facts_get_latest_node_update() {
+    global $language;
+
+    $query = db_select('node', 'n');
+    $query
+        ->fields('n', array('changed'))
+        ->condition('status', 1)
+        ->condition('language', $language->language)
+        ->orderBy('changed', 'DESC')
+        ->range(0, 1)
+        ->addTag('node_access');
+
+    $latest_node = $query->execute()->fetch();
+    if (!$latest_node) {
+        return null;
     }
 
-    if (empty($tids)) {
-        return 0;
-    }
-
-    return _recat_activity_get_nodes_count($tids);
+    return $latest_node->changed;
 }
 
 function _recat_blocks_facts_format_number($input) {
@@ -135,4 +133,8 @@ function _recat_blocks_facts_format_number($input) {
             ? floor($input * 1000) / 1000
             : ceil($input * 1000) / 1000
     ) . $suffixes[$suffixIndex];
+}
+
+function _recat_blocks_facts_format_date($timestamp, $date_format = 'medium') {
+    return format_date($timestamp, $date_format);
 }

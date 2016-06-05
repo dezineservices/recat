@@ -30,11 +30,6 @@
                                 <?php print _hs_resource_get('recat_library.table.tags', 'plain', null, false); ?>
                             </a>
                         </th>
-                        <th>
-                            <a class="sorting none-selectable" data-ng-click="listing.sortingChange('date');" data-ng-class="{ active: listing.isSortingActive('date'), up: listing.isSortingOrderDesc('date') }">
-                                <?php print _hs_resource_get('recat_library.table.date', 'plain', null, false); ?>
-                            </a>
-                        </th>
                         <th><?php print _hs_resource_get('recat_library.table.file_extension', 'plain', null, false); ?></th>
                     </tr>
                 </thead>
@@ -46,7 +41,6 @@
                             <a class="js-recatWfOverlay" data-ng-if="listing.isFirstDownloadRequest" data-ng-href="{{ listing.firstDownloadRequestUrl }}" data-ng-click="listing.requestFile()">{{ node.title }}</a>
                         </td>
                         <td>{{ node.tags }}</td>
-                        <td>{{ node.date }}</td>
                         <td>{{ node.file_extension }}</td>
                     </tr>
                 </tbody>
