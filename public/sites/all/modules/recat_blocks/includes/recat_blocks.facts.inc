@@ -93,7 +93,7 @@ function _recat_blocks_facts_get_project_posts_count() {
         ->fields('n', array('nid'))
         ->condition('status', 1)
         ->condition('language', $language->language)
-        ->condition('type', 'activity')
+        ->condition('type', 'file')
         ->addTag('node_access');
 
     return $query->execute()->rowCount();
